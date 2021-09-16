@@ -101,17 +101,16 @@ class Gite():
 
 
     def __init__(self, soup):
+        self.soup = str(soup)
         self.link = BASE_URL + soup.find_all("a")[2]["href"]
-        #self.image = [BASE_URL + image["data-src"] if "data-src" in image.keys() else BASE_URL + image["src"] for image in soup.find_all("img")]
-        try:
-            self.price = int(soup.select(".g2f-accommodationTile-text-price-new")[0].text.strip()[:-2])
-        except ValueError:
-            self.prince = 10**8
+        self.id = re.findall(r"-([a-z0-9]+)\?", self.link)[0]
+        self.image = [BASE_URL + image["data-src"] if "data-src" in image.attrs.keys() else BASE_URL + image["src"] for image in soup.find_all("img")]
+        self.price = int("".join([charac for charac in soup.select(".g2f-accommodationTile-text-price-new")[0].text.strip() if charac.isdigit()]))
         self.title = soup.find("h2").text.strip()
-        #self.epis = len(soup.select(".g2f-levelEpis")[0].find_all("li"))
+        self.epis = len(soup.select(".g2f-levelEpis")[0].find_all("li")) if len(soup.select(".g2f-levelEpis")) > 0 else None
         self.location_name = soup.select(".g2f-accommodationTile-text-place")[0].text[2:]
         self.chambres, self.personnes = re.findall(r"(?:(\d+) chambres)?(?:\s|\\n)*(\d+) personnes", soup.select(".g2f-accommodationTile-text-capacity")[0].text.strip())[0]
-        #self.note = float(result.select(".g2f-rating-full")[0]["style"][12:16])
+        self.note = float(soup.select(".g2f-rating-full")[0]["style"][12:16]) if len(soup.select(".g2f-rating-full")) > 0 else None
 
     def __str__(self):
         output = str()
