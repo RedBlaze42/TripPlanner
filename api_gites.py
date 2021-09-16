@@ -12,10 +12,13 @@ class FilterOrder(Enum):
     DESC = -1
 
 class Filters(Enum):
-    GITE_DE_GROUPE = 0
-    GITE = 1
-    CHAMBRE_HOTE = 2
-    #Piscine/Autre ?
+    GITE_DE_GROUPE = "type:36171"
+    GITE = "type:36172"
+    ANIMALS = "facet_animals:72241"
+    PISCINE = "amenities_ext:35881"
+    LAVE_VAISSELLE = "shared_interior_amenities:35925"
+    LAVE_LINGE = "shared_interior_amenities:35935"
+    WIFI = "facet_accommodation_services:36219"
 
 class Regions(Enum):
     ILE_DE_FRANCE = (6, "Île-de-France")
@@ -34,11 +37,12 @@ class Regions(Enum):
     
 class GitesDeFrance():
 
-    def __init__(self, region, checkin, checkout, travelers):
+    def __init__(self, region, checkin, checkout, travelers, filters = list()):
         self.checkin = datetime.strftime(checkin, "%Y-%m-%d") if isinstance(checkin, datetime) else checkin
         self.checkout = datetime.strftime(checkout, "%Y-%m-%d") if isinstance(checkout, datetime) else checkout
         if not isinstance(region, Regions): raise ValueError
         
+        self.filters = filters
         self.region = region
         self.travelers = travelers
         self.seed = None
@@ -80,7 +84,18 @@ class GitesDeFrance():
 
     def get_page_html(self, page = 0):
         region_code, region_name = self.region.value
-        params = {"destination": region_name, "regions": region_code, "page": page, "arrival": self.checkin, "departure": self.checkout, "travelers": self.travelers}
+        params = {
+            "destination": region_name,
+            "regions": region_code,
+            "page": page,
+            "arrival": self.checkin,
+            "departure": self.checkout,
+            "travelers": self.travelers
+        }
+
+        for i, filter in enumerate(self.filters):
+            params["f[{}]".format(i)] = filter.value
+
         if self.seed is not None: params["seed"] = self.seed
 
         req = requests.get(BASE_SEARCH_URL, params = params)
