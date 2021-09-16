@@ -116,7 +116,7 @@ class GitesDeFrance():
             "seed": self.seed,
             "n": self.n,
             "nb_results": self._nb_results,
-            "results": [result.soup for result in self.results]
+            "results": [{"soup": result.soup, "location": result._location} for result in self.results]
         }
         return output_dict
 
@@ -126,7 +126,11 @@ class GitesDeFrance():
         obj.seed = input_dict["seed"]
         obj.n = input_dict["n"]
         obj._nb_results = input_dict["nb_results"]
-        obj.results = [Gite(BeautifulSoup(result, features = "html.parser")) for result in input_dict["results"]]
+        for result in input_dict["results"]:
+            gite = Gite(BeautifulSoup(result["soup"], features = "html.parser"))
+            gite._location = result["location"]
+            obj.results.append(gite)
+        
         return obj
 
 class Gite():
