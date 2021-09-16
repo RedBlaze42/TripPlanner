@@ -100,7 +100,7 @@ class GitesDeFrance():
         results = soup.find("section", id = "markup-tiles").select(".g2f-accommodationTile ")
         output = list()
 
-        for result in results:  
+        for result in results:
             gite = Gite(result)
             if gite.id not in self.result_ids:
                 output.append(gite)
@@ -126,7 +126,8 @@ class Gite():
         output = str()
         for key, value in self.__dict__.items():
             if isinstance(value, str) or isinstance(value, int) or isinstance(value, float) and key[0] != "_":
-                output += "{}: {} ".format(key, value)
+                if not isinstance(value, str) or len(value) < 100:
+                    output += "{}: {} ".format(key, value)
         
         return output
 
