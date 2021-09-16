@@ -33,10 +33,6 @@ class Regions(Enum):
 
     
 class GitesDeFrance():
-    seed = None
-    _nb_results = None
-    results = list()
-    n = 0
 
     def __init__(self, region, checkin, checkout, travelers):
         self.checkin = datetime.strftime(checkin, "%Y-%m-%d") if isinstance(checkin, datetime) else checkin
@@ -45,6 +41,10 @@ class GitesDeFrance():
         
         self.region = region
         self.travelers = travelers
+        self.seed = None
+        self._nb_results = None
+        self.results = list()
+        self.n = 0
 
     def __iter__(self, n = 0):
         self.n = n - 1
@@ -134,7 +134,6 @@ class GitesDeFrance():
         return obj
 
 class Gite():
-    _location = None
 
     def __init__(self, soup):
         self.soup = str(soup)
@@ -147,6 +146,7 @@ class Gite():
         self.location_name = soup.select(".g2f-accommodationTile-text-place")[0].text[2:]
         self.chambres, self.personnes = re.findall(r"(?:(\d+) chambres)?(?:\s|\\n)*(\d+) personnes", soup.select(".g2f-accommodationTile-text-capacity")[0].text.strip())[0]
         self.chambes, self.personnes = int(self.chambres) if self.chambres != "" else None, int(self.personnes)
+        self._location = None
         self.note = float(soup.select(".g2f-rating-full")[0]["style"][12:16]) if len(soup.select(".g2f-rating-full")) > 0 else None
 
     @property
