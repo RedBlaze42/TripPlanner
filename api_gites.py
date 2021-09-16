@@ -35,7 +35,8 @@ class Regions(Enum):
 class GitesDeFrance():
     seed = None
     _nb_results = None
-    n = -1
+    results = list()
+    n = 0
 
     def __init__(self, region, checkin, checkout, travelers):
         self.checkin = datetime.strftime(checkin, "%Y-%m-%d") if isinstance(checkin, datetime) else checkin
@@ -45,9 +46,8 @@ class GitesDeFrance():
         self.region = region
         self.travelers = travelers
 
-    def __iter__(self, n = -1):
-        self.n = n
-        self.results = list()
+    def __iter__(self, n = 0):
+        self.n = n - 1
         return self
 
     def __next__(self):
