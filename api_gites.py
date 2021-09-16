@@ -130,7 +130,7 @@ class GitesDeFrance():
         return obj
 
 class Gite():
-
+    _location = None
 
     def __init__(self, soup):
         self.soup = str(soup)
@@ -143,6 +143,18 @@ class Gite():
         self.location_name = soup.select(".g2f-accommodationTile-text-place")[0].text[2:]
         self.chambres, self.personnes = re.findall(r"(?:(\d+) chambres)?(?:\s|\\n)*(\d+) personnes", soup.select(".g2f-accommodationTile-text-capacity")[0].text.strip())[0]
         self.note = float(soup.select(".g2f-rating-full")[0]["style"][12:16]) if len(soup.select(".g2f-rating-full")) > 0 else None
+
+    @property
+    def location(self):
+        if self._location is not None: return self._location
+        
+        req = requests.get(self.link)
+        req.raise_for_status()
+        soup = BeautifulSoup(req.content, features = "html.parser")
+        map_div = soup.find("div",id="map-accommodation")
+        self._location = map_div["data-lat"], map_div["data-lng"]
+
+        return self._location
 
     def __str__(self):
         output = str()
