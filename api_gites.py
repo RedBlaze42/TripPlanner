@@ -140,14 +140,17 @@ class Gite():
         self.link = BASE_URL + soup.find_all("a")[2]["href"]
         self.id = re.findall(r"-([a-z0-9]+)\?", self.link)[0]
         self.image = [BASE_URL + image["data-src"] if "data-src" in image.attrs.keys() else BASE_URL + image["src"] for image in soup.find_all("img")]
-        self.price = int("".join([charac for charac in soup.select(".g2f-accommodationTile-text-price-new")[0].text.strip() if charac.isdigit()]))
         self.title = soup.find("h2").text.strip()
         self.epis = len(soup.select(".g2f-levelEpis")[0].find_all("li")) if len(soup.select(".g2f-levelEpis")) > 0 else None
         self.location_name = soup.select(".g2f-accommodationTile-text-place")[0].text[2:]
         self.chambres, self.personnes = re.findall(r"(?:(\d+) chambres)?(?:\s|\\n)*(\d+) personnes", soup.select(".g2f-accommodationTile-text-capacity")[0].text.strip())[0]
-        self.chambes, self.personnes = int(self.chambres) if self.chambres != "" else None, int(self.personnes)
+        self.chambres, self.personnes = int(self.chambres) if self.chambres != "" else None, int(self.personnes)
         self._location = None
         self.note = float(soup.select(".g2f-rating-full")[0]["style"][12:16]) if len(soup.select(".g2f-rating-full")) > 0 else None
+
+        price_soup = soup.select(".g2f-accommodationTile-text-price-new")[0]
+        if len(price_soup.find_all("del")) > 0: price_soup = price_soup.find("strong")
+        self.price = int("".join([charac for charac in price_soup.text.strip().split(",")[0] if charac.isdigit()]))
 
     @property
     def location(self):
