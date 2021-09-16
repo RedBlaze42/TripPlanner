@@ -156,7 +156,7 @@ class Gite():
         req.raise_for_status()
         soup = BeautifulSoup(req.content, features = "html.parser")
         map_div = soup.find("div",id="map-accommodation")
-        self._location = map_div["data-lat"], map_div["data-lng"]
+        self._location = float(map_div["data-lat"]), float(map_div["data-lng"])
 
         return self._location
 
