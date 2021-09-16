@@ -107,6 +107,28 @@ class GitesDeFrance():
         
         return output
 
+    def to_dict(self):
+        output_dict = {
+            "region": self.region.name,
+            "checkin": self.checkin,
+            "checkout": self.checkout,
+            "travelers": self.travelers,
+            "seed": self.seed,
+            "n": self.n,
+            "nb_results": self._nb_results,
+            "results": [result.soup for result in self.results]
+        }
+        return output_dict
+
+    @classmethod
+    def from_dict(cls, input_dict):
+        obj = cls(Regions[input_dict["region"]], input_dict["checkin"], input_dict["checkout"], input_dict["travelers"])
+        obj.seed = input_dict["seed"]
+        obj.n = input_dict["n"]
+        obj._nb_results = input_dict["nb_results"]
+        obj.results = [Gite(BeautifulSoup(result, features = "html.parser")) for result in input_dict["results"]]
+        return obj
+
 class Gite():
 
 
