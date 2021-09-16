@@ -146,6 +146,7 @@ class Gite():
         self.epis = len(soup.select(".g2f-levelEpis")[0].find_all("li")) if len(soup.select(".g2f-levelEpis")) > 0 else None
         self.location_name = soup.select(".g2f-accommodationTile-text-place")[0].text[2:]
         self.chambres, self.personnes = re.findall(r"(?:(\d+) chambres)?(?:\s|\\n)*(\d+) personnes", soup.select(".g2f-accommodationTile-text-capacity")[0].text.strip())[0]
+        self.chambes, self.personnes = int(self.chambres) if self.chambres != "" else None, int(self.personnes)
         self.note = float(soup.select(".g2f-rating-full")[0]["style"][12:16]) if len(soup.select(".g2f-rating-full")) > 0 else None
 
     @property
