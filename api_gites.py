@@ -35,6 +35,7 @@ class Regions(Enum):
 class GitesDeFrance():
     seed = None
     _nb_results = None
+    n = -1
 
     def __init__(self, region, checkin, checkout, travelers):
         self.checkin = datetime.strftime(checkin, "%Y-%m-%d") if isinstance(checkin, datetime) else checkin
@@ -44,21 +45,27 @@ class GitesDeFrance():
         self.region = region
         self.travelers = travelers
 
-    def __iter__(self):
-        self.n = 0
-        self.cache = list()
+    def __iter__(self, n = -1):
+        self.n = n
+        self.results = list()
         return self
 
     def __next__(self):
         self.n += 1
         if self.n < self.nb_results:
-            if self.n >= len(self.cache):
+            if self.n > len(self.results) - 1:
                 page = (self.n + 1) // RESULTS_PER_PAGES
-                self.cache += self.get_result_page(page = page)
-            return self.cache[self.n]
+                self.results += self.get_result_page(page = page)
+            return self.results[self.n]
+        else:
+            raise StopIteration
 
     def __len__(self):
         return self.nb_results
+
+    @property
+    def result_ids(self):
+        return {result.id for result in self.results}
 
     @property
     def nb_results(self):
@@ -79,6 +86,7 @@ class GitesDeFrance():
         req = requests.get(BASE_SEARCH_URL, params = params)
 
         req.raise_for_status()
+        self.last_url = req.url
         if self.seed is None:
             try:
                 self.seed = re.findall(r"seed=([a-zA-Z0-9]*)", req.url)[0]
@@ -93,7 +101,9 @@ class GitesDeFrance():
         output = list()
 
         for result in results:  
-            output.append(Gite(result))
+            gite = Gite(result)
+            if gite.id not in self.result_ids:
+                output.append(gite)
         
         return output
 
