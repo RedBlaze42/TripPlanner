@@ -16,7 +16,8 @@ class TrainStations():
             gare_dict = {
                 "name": station["fields"]["gare_alias_libelle_noncontraint"],
                 "lat": station["fields"]["wgs_84"][0],
-                "lon": station["fields"]["wgs_84"][1]
+                "lon": station["fields"]["wgs_84"][1],
+                "ville": station["fields"]["commune_libellemin"]
             }
             self.stations.append(gare_dict)
 
