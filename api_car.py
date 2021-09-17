@@ -1,3 +1,5 @@
+import requests, json, time
+
 auth_key = "JSBS20160223162852451059820592"
 
 def geocode(query):
