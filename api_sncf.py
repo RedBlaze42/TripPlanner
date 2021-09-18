@@ -1,5 +1,5 @@
 import json, os, urllib.request
-from math import sin, cos, sqrt, atan2, radians
+from utils import distance_km
 
 class TrainStations():
 
@@ -22,16 +22,6 @@ class TrainStations():
             self.stations.append(gare_dict)
 
     def find_closest_station(self, lat, lon):
-        radius = 6373.0
-        station_distances = list()
-        for station in self.stations:
-            lat1, lon1 = radians(lat), radians(lon)
-            lat2, lon2 = radians(station["lat"]), radians(station["lon"])
-            dlon = lon1 - lon2
-            dlat = lat1 - lat2
-            a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-            c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-            station_distances.append((station, radius * c))
+        station_distances = [(station, distance_km(lat, lon, station["lat"], station["lon"])) for station in self.stations]
         station_distances.sort(key = lambda x: x[1])
         return station_distances[0][0]
