@@ -32,6 +32,10 @@ def directions(orig_id, dest_id, fuel_cost = 1.5):
     req.raise_for_status()
     data = json.loads(req.content[req.content.decode("utf-8").index("{"):-1])
     
+    if not "header" in data.keys():
+        print(data)
+        return None
+    
     output = {
         "fuel_cost": round(data["header"]["summaries"][0]["consumption"], 2),
         "toll_cost": round(data["header"]["summaries"][0]["tollCost"]["car"]/100, 2),
