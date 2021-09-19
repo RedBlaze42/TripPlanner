@@ -18,7 +18,9 @@ class Filters(Enum):
     PISCINE = "amenities_ext:35881"
     LAVE_VAISSELLE = "shared_interior_amenities:35925"
     LAVE_LINGE = "shared_interior_amenities:35935"
-    WIFI = "facet_accommodation_services:36219"
+    WIFI = "facet_accommodation_services:36219",
+    MER = "thematics:36151",
+    MONTAGNE = "thematics:36153"
 
 class Regions(Enum):
     ILE_DE_FRANCE = (6, "Île-de-France")
