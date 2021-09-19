@@ -23,5 +23,4 @@ class TrainStations():
 
     def find_closest_station(self, lat, lon):
         station_distances = [(station, distance_km(lat, lon, station["lat"], station["lon"])) for station in self.stations]
-        station_distances.sort(key = lambda x: x[1])
-        return station_distances[0][0]
+        return min(station_distances, key = lambda x: x[1])[0]
