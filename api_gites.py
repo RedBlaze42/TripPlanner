@@ -79,7 +79,7 @@ class GitesDeFrance():
         line = [line for line in soup.find_all("p") if "Résultat" in str(line)]
         if len(line) == 0: return 0
         
-        self._nb_results = int(re.findall(r"(\d+) Résultats", str(line[0]))[0])
+        self._nb_results = int(re.findall(r"(\d+) Résultats?", str(line[0]))[0])
         return self._nb_results
 
     def get_page_html(self, page = 0):
