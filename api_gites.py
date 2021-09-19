@@ -18,7 +18,9 @@ class Filters(Enum):
     PISCINE = "amenities_ext:35881"
     LAVE_VAISSELLE = "shared_interior_amenities:35925"
     LAVE_LINGE = "shared_interior_amenities:35935"
-    WIFI = "facet_accommodation_services:36219"
+    WIFI = "facet_accommodation_services:36219",
+    MER = "thematics:36151",
+    MONTAGNE = "thematics:36153"
 
 class Regions(Enum):
     ILE_DE_FRANCE = (6, "Île-de-France")
@@ -78,7 +80,7 @@ class GitesDeFrance():
         line = [line for line in soup.find_all("p") if "Résultat" in str(line)]
         if len(line) == 0: return 0
         
-        self._nb_results = int(re.findall(r"(\d+) Résultats", str(line[0]))[0])
+        self._nb_results = int(re.findall(r"(\d+) Résultats?", str(line[0]))[0])
         return self._nb_results
 
     def get_page_html(self, page = 0):
@@ -155,7 +157,7 @@ class Gite():
     def __init__(self, soup):
         self.soup = str(soup)
         self.link = BASE_URL + soup.find_all("a")[2]["href"]
-        self.id = re.findall(r"-([a-z0-9]+)\?", self.link)[0]
+        self.id = re.findall(r"-([a-z0-9]+)(?:\?|$)", self.link)[0]
         self.image = [BASE_URL + image["data-src"] if "data-src" in image.attrs.keys() else BASE_URL + image["src"] for image in soup.find_all("img")]
         self.title = soup.find("h2").text.strip()
         self.epis = len(soup.select(".g2f-levelEpis")[0].find_all("li")) if len(soup.select(".g2f-levelEpis")) > 0 else None
@@ -165,9 +167,13 @@ class Gite():
         self._location = None
         self.note = float(soup.select(".g2f-rating-full")[0]["style"][12:16]) if len(soup.select(".g2f-rating-full")) > 0 else None
 
-        price_soup = soup.select(".g2f-accommodationTile-text-price-new")[0]
-        if len(price_soup.find_all("del")) > 0: price_soup = price_soup.find("strong")
-        self.price = int("".join([charac for charac in price_soup.text.strip().split(",")[0] if charac.isdigit()]))
+        price_soup = soup.select(".g2f-accommodationTile-text-price-new")
+        if len(price_soup) > 0:
+            price_soup = price_soup[0]
+            if len(price_soup.find_all("del")) > 0: price_soup = price_soup.find("strong")
+            self.price = int("".join([charac for charac in price_soup.text.strip().split(",")[0] if charac.isdigit()]))
+        else:
+            self.price = -1
 
     @property
     def location(self):
