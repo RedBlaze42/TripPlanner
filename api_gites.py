@@ -163,9 +163,13 @@ class Gite():
         self._location = None
         self.note = float(soup.select(".g2f-rating-full")[0]["style"][12:16]) if len(soup.select(".g2f-rating-full")) > 0 else None
 
-        price_soup = soup.select(".g2f-accommodationTile-text-price-new")[0]
-        if len(price_soup.find_all("del")) > 0: price_soup = price_soup.find("strong")
-        self.price = int("".join([charac for charac in price_soup.text.strip().split(",")[0] if charac.isdigit()]))
+        price_soup = soup.select(".g2f-accommodationTile-text-price-new")
+        if len(price_soup) > 0:
+            price_soup = price_soup[0]
+            if len(price_soup.find_all("del")) > 0: price_soup = price_soup.find("strong")
+            self.price = int("".join([charac for charac in price_soup.text.strip().split(",")[0] if charac.isdigit()]))
+        else:
+            self.price = -1
 
     @property
     def location(self):
