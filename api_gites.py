@@ -128,7 +128,6 @@ class GitesDeFrance():
 
     def to_dict(self):
         output_dict = {
-            "region": self.region.name,
             "checkin": self.checkin,
             "checkout": self.checkout,
             "travelers": self.travelers,
@@ -137,11 +136,14 @@ class GitesDeFrance():
             "nb_results": self._nb_results,
             "results": [{"soup": result.soup, "location": result._location} for result in self.results]
         }
+        if self.region is not None: 
+            output_dict["region"] = self.region.name
         return output_dict
 
     @classmethod
     def from_dict(cls, input_dict):
-        obj = cls(Regions[input_dict["region"]], input_dict["checkin"], input_dict["checkout"], input_dict["travelers"])
+        region = Regions[input_dict["region"]] if "region" in input_dict.keys() else None
+        obj = cls(input_dict["checkin"], input_dict["checkout"], input_dict["travelers"], region = region)
         obj.seed = input_dict["seed"]
         obj.n = input_dict["n"]
         obj._nb_results = input_dict["nb_results"]
