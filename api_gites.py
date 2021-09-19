@@ -37,10 +37,9 @@ class Regions(Enum):
     
 class GitesDeFrance():
 
-    def __init__(self, region, checkin, checkout, travelers, filters = list()):
+    def __init__(self, checkin, checkout, travelers, filters = list(), region = None):
         self.checkin = datetime.strftime(checkin, "%Y-%m-%d") if isinstance(checkin, datetime) else checkin
         self.checkout = datetime.strftime(checkout, "%Y-%m-%d") if isinstance(checkout, datetime) else checkout
-        if not isinstance(region, Regions): raise ValueError
         
         self.filters = filters
         self.region = region
@@ -83,15 +82,18 @@ class GitesDeFrance():
         return self._nb_results
 
     def get_page_html(self, page = 0):
-        region_code, region_name = self.region.value
         params = {
-            "destination": region_name,
-            "regions": region_code,
+            "destination": "",
             "page": page,
             "arrival": self.checkin,
             "departure": self.checkout,
             "travelers": self.travelers
         }
+        
+        if self.region is not None:
+            region_code, region_name = self.region.value
+            params["destination"] = region_name
+            params["regions"] = region_code
 
         for i, filter in enumerate(self.filters):
             params["f[{}]".format(i)] = filter.value
