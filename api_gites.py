@@ -132,6 +132,7 @@ class GitesDeFrance():
             "checkout": self.checkout,
             "travelers": self.travelers,
             "seed": self.seed,
+            "filters": [filter_enum.name for filter_enum in self.filters],
             "n": self.n,
             "nb_results": self._nb_results,
             "results": [{"soup": result.soup, "location": result._location} for result in self.results]
@@ -143,7 +144,8 @@ class GitesDeFrance():
     @classmethod
     def from_dict(cls, input_dict):
         region = Regions[input_dict["region"]] if "region" in input_dict.keys() else None
-        obj = cls(input_dict["checkin"], input_dict["checkout"], input_dict["travelers"], region = region)
+        filters = [Filters[filter_name] for filter_name in input_dict["filters"]]
+        obj = cls(input_dict["checkin"], input_dict["checkout"], input_dict["travelers"], region = region, filters = filters)
         obj.seed = input_dict["seed"]
         obj.n = input_dict["n"]
         obj._nb_results = input_dict["nb_results"]
