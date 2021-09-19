@@ -10,3 +10,6 @@ def distance_km(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
     return c * radius
+
+def is_in_france(lat, lon):
+    return distance_km(46.452547, 2.404213, lat, lon) < 600
