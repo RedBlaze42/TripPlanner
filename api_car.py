@@ -19,6 +19,19 @@ def geocode(query, point = None):
             loc_distances.append((location["location"]["id"], distance_km(coords["lat"], coords["lon"], point[0], point[1])))
 
         return min(loc_distances, key = lambda x: x[1])[0]
+  
+def rgeocode(lat, lon):
+    url = "https://vmrest.viamichelin.com/apir/1/rgeocode.json2"
+    
+    data = {
+        "center": "{}:{}".format(lon, lat),
+        "showHT": True,"obfuscation": False,"ie": "UTF-8","charset": "UTF-8","authKey": auth_key,"lg": "eng","protocol": "https"
+    }
+    req = requests.get(url, params = data)
+    req.raise_for_status()
+    req_data = req.json()
+    print(req.content)
+    return req_data["locationList"][0]["location"]["id"]
 
 def directions(orig_id, dest_id, fuel_cost = 1.5):
     url = "https://secure-apir.viamichelin.com/apir/2/iti.json/fra"
