@@ -19,9 +19,9 @@ class GeoCoder():
     
     def __init__(self):
         if not os.path.exists("villes_laposte.json"):
-            print("Downloading villes_laposte.json ...", end="")
+            print("Downloading villes_laposte.json ...")
             urllib.request.urlretrieve("https://datanova.legroupe.laposte.fr/explore/dataset/laposte_hexasmal/download/?format=json&timezone=Europe/Berlin&lang=fr", "villes_laposte.json")
-            print("completed")
+            print("Completed")
             
         with open("villes_laposte.json", "r", encoding="utf-8") as f:
             data = json.load(f)
