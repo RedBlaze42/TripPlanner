@@ -5,7 +5,9 @@ class TrainStations():
 
     def __init__(self):
         if not os.path.exists("sncf_gares.json"):
+            print("Downloading sncf_gares.json ...", end="")
             urllib.request.urlretrieve("https://ressources.data.sncf.com/explore/dataset/referentiel-gares-voyageurs/download/?format=json&timezone=Europe/Berlin&lang=fr", "sncf_gares.json")
+            print("completed")
 
         with open("sncf_gares.json", "r", encoding="utf-8") as f:
             data = json.load(f)
