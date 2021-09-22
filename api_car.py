@@ -64,3 +64,43 @@ class Michelin():
         }
 
         return output
+
+class OpenRouteService():
+    
+    def __init__(self, config_path = "config.json"):
+        with open(config_path, "r") as f:
+            self.key = json.load(f)["openrouteservice_key"]
+        self.session = requests.Session()
+        self.session.headers.update({'Authorization': self.key, "Accept": "application/json"})
+            
+            
+    def matrix(self, destinations):
+        url = "https://api.openrouteservice.org/v2/matrix/driving-car"
+        
+        destinations_list = [dest_location[::-1] for dest_name, dest_location in destinations.items()]
+        req = self.session.post(url, json ={"locations":destinations_list,"metrics":["distance","duration"]})
+        
+        req.raise_for_status()
+        #print(req.content)
+        raw_data = req.json()
+        
+        matrix_data = dict()
+        for name_source, location_source in destinations.items():
+            
+            source_id = destinations_list.index(location_source[::-1])
+            
+            matrix_data[name_source] = dict()
+            
+            for name_dest, location_dest in destinations.items():
+                if name_dest == name_source: continue
+                
+                dest_id = destinations_list.index(location_dest[::-1])
+                
+                trip_dict = {
+                    "distance": raw_data["distances"][source_id][dest_id],
+                    "duration": raw_data["durations"][source_id][dest_id]
+                }
+                
+                matrix_data[name_source][name_dest] = trip_dict
+        
+        return matrix_data    
