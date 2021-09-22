@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests, re
 from datetime import datetime, timedelta
 from enum import Enum
+import pickle
 
 BASE_URL = "https://www.gites-de-france.com"
 BASE_SEARCH_URL = "https://www.gites-de-france.com/fr/search"
@@ -155,6 +156,15 @@ class GitesDeFrance():
             obj.results.append(gite)
         
         return obj
+    
+    def to_file(self, filename):
+        with open(filename, "wb") as f:
+            pickle.dump(self, f)
+          
+    @classmethod  
+    def from_file(cls, filename):
+        with open(filename, "rb") as f:
+            return pickle.load(f)
 
 class Gite():
 
