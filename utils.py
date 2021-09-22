@@ -1,5 +1,6 @@
 from math import sin, cos, sqrt, atan2, radians
 import urllib.request, os, json
+import time
 
 def distance_km(lat1, lon1, lat2, lon2):
     radius = 6373.0
@@ -14,6 +15,16 @@ def distance_km(lat1, lon1, lat2, lon2):
 
 def is_in_france(lat, lon):
     return distance_km(46.452547, 2.404213, lat, lon) < 600
+
+def format_seconds(seconds, show_seconds=False):
+    output = ""
+    output += "{}h".format(seconds//3600)
+    output += " {}m".format(seconds%3600//60)
+        
+    if show_seconds:
+        output += " {}s".format(seconds%60)
+    
+    return output
 
 class GeoCoder():
     
