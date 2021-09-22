@@ -1,4 +1,4 @@
 *.json
 __pycache__
-test.py
+test*.py
 *.txt
