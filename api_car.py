@@ -39,11 +39,11 @@ class Michelin():
         print(req.content)
         return req_data["locationList"][0]["location"]["id"]
 
-    def directions(orig_id, dest_id, fuel_cost = 1.5):
+    def directions(self, orig_id, dest_id, fuel_cost = 1.5):
         url = "https://secure-apir.viamichelin.com/apir/2/iti.json/fra"
         data = {
             "steps":"3:e:{};3:e:{};".format(orig_id, dest_id),
-            "fuelCost": fuel_cost, "fuelConsump":"7.9:6.9:7", "authKey":auth_key,
+            "fuelCost": fuel_cost, "fuelConsump":"7.9:6.9:7", "authKey": self.auth_key,
             "distUnit":"m","veht":0,"itit":0,"avoidClosedRoad":False,"currency":"EUR","indemnite":0,"favMotorways":True,"avoidBorders":False,"avoidTolls":False,"avoidCCZ":False,"avoidORC":False,"avoidPass":False,"wCaravan":False,"withSecurityAdv":True,"avoidExpressWays":False,"fullMapOpt":"300:300:true:true:true","stepMapOpt":"300:300:true:true:true","multipleIti":True,"traffic":"FRA","obfuscation":False,"ie":"UTF-8","charset":"UTF-8","lg":"fra","nocache":time.time()*1000,"protocol":"https", "callback":"JSE.HTTP.asyncRequests[9].HTTPResponseLoaded"
         }
 
