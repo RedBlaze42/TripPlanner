@@ -44,7 +44,7 @@ def nb_gites(to_datetime = None, travelers = 14, input_data = None):
 
     data = gos.Data([trace])
     layout = {
-    "title": "Nombre de gîtes disponible sur gitesdefrance.com, mis à jour le {}".format(datetime.now().strftime("%d/%m/%Y à %H:%M")), 
+    "title": "Nombre de gîtes disponibles sur gitesdefrance.com, mis à jour le {}".format(datetime.now().strftime("%d/%m/%Y à %H:%M")), 
     "xaxis": {
         "title": "", 
         "mirror": True, 
