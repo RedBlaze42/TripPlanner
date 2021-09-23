@@ -5,7 +5,7 @@ class Covoit():
     def __init__(self, name, location, is_driver, capacity = 5):
         self.name = name
         self.location = location
-        self.is_drisver = is_driver
+        self.is_driver = is_driver
         self.capacity = capacity
         
         if self.is_driver:
