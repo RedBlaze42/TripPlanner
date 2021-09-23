@@ -147,3 +147,56 @@ def map_gites(gites):
     """.format(plot_div=plot_div, js_callback=js_callback)
 
     return fig, html_str
+
+def route_layer(route_data, color):
+    lat, lon = [lat for lat, lon in route_data["route"]["geometry"]], [lon for lat, lon in route_data["route"]["geometry"]]
+
+    layer = go.Scattermapbox(
+        lat = lat,
+        lon = lon,
+        line_width = 5,
+        mode = "lines",
+        showlegend = False,
+        hoverinfo = 'none',
+        line_color = color
+    )
+
+    return layer
+
+def route(routes, markers, end_marker_name):
+
+    fig = go.Figure()
+
+    for route, color in routes:
+        fig.add_trace(route_layer(route, color))
+
+    fig.add_trace(go.Scattermapbox(
+        lat = [lat for lat, lon in markers.values()],
+        lon = [lon for lat, lon in markers.values()],
+        text = [name for name, location in markers.items()],
+        name = "",
+        marker_size = 15,
+        marker_color = ["green" if name != end_marker_name else "red" for name in markers.keys()],
+        hoverinfo = "text",
+        textposition='top right',
+        textfont = dict(size=16, color='black'),
+        mode = "text+markers"
+    ))
+
+    fig.layout = go.Layout(
+        hovermode = 'closest',
+        mapbox = dict(
+        bearing = 0,
+        center = dict(
+            lat = 47.4,
+            lon = 2
+        ),
+        pitch = 0,
+        zoom = 5.5,
+        )
+    )
+
+    fig.update_layout(mapbox_style="open-street-map")
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
+    return fig
