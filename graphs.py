@@ -148,27 +148,25 @@ def map_gites(gites):
 
     return fig, html_str
 
-def route_layer(route_data, color):
-    lat, lon = [lat for lat, lon in route_data["route"]["geometry"]], [lon for lat, lon in route_data["route"]["geometry"]]
-
-    layer = go.Scattermapbox(
-        lat = lat,
-        lon = lon,
-        line_width = 5,
-        mode = "lines",
-        showlegend = False,
-        hoverinfo = 'none',
-        line_color = color
-    )
-
-    return layer
-
-def route(routes, markers, end_marker_name):
-
+def route(routes, end_marker_name):
+    #routes is a list of: [route_from_openrouteservice.directions, {"step_name":[step_lat, step_lon]}, route_color]
     fig = go.Figure()
 
-    for route, color in routes:
-        fig.add_trace(route_layer(route, color))
+    markers = dict()
+    for route_data, steps, color in routes:
+        lat, lon = [lat for lat, lon in route_data["route"]["geometry"]], [lon for lat, lon in route_data["route"]["geometry"]]
+
+        fig.add_trace(go.Scattermapbox(
+            lat = lat,
+            lon = lon,
+            line_width = 5,
+            mode = "lines",
+            showlegend = False,
+            hoverinfo = 'none',
+            line_color = color
+        ))
+        markers.update(steps)
+
 
     fig.add_trace(go.Scattermapbox(
         lat = [lat for lat, lon in markers.values()],
