@@ -1,4 +1,4 @@
-import requests, json, time
+import requests, json, time, polyline
 from utils import distance_km
 
 class Michelin():
@@ -103,4 +103,22 @@ class OpenRouteService():
                 
                 matrix_data[name_source][name_dest] = trip_dict
         
-        return matrix_data    
+        return matrix_data
+    
+    def directions(self, waypoints):
+        url = "https://api.openrouteservice.org/v2/directions/driving-car"
+        
+        data = {
+            "coordinates":[waypoint[::-1] for waypoint in waypoints],
+            "extra_info":["tollways"],"instructions":"false","maneuvers":"false","units":"m","geometry":"true"
+        }
+        
+        req = self.session.post(url, json = data)
+        req.raise_for_status()
+        data = req.json()
+        data["route"] = data["routes"][0]
+        del data["routes"]
+        
+        data["route"]["geometry"] = polyline.decode(data["route"]["geometry"])
+        
+        return data
