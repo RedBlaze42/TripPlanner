@@ -28,7 +28,6 @@ class CovoitCalculator():
     @property
     def matrix(self):
         if self.last_matrix_destinations != self.destinations:
-            print("Matrix")
             self.last_matrix = self.route.matrix(self.destinations)
             self.last_matrix_destinations = dict(self.destinations)
             
