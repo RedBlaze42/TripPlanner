@@ -7,24 +7,29 @@ from plotly.offline import plot
 import plotly.graph_objs as gos
 from tqdm import tqdm
 
+def nb_gites_data(travelers, to_datetime = None):
+    from_datetime = datetime.now()
+    
+    if to_datetime is None:
+        to_datetime = from_datetime + timedelta(days = 31*7)
+
+    to_datetime = to_datetime.replace(month = to_datetime.month + 1, day = 2)
+
+    output = dict()
+    checkin = from_datetime
+    checkout = checkin + timedelta(days = 1)
+    progress_bar = tqdm(total = int((to_datetime-from_datetime).total_seconds()//86400))
+    while checkout < to_datetime:
+        output[checkin.isoformat()] = len(api_gites.GitesDeFrance(checkin, checkout, travelers))
+        checkin = checkout
+        checkout += timedelta(days = 1)
+        progress_bar.update(1)
+    progress_bar.close()
+    return output
+
 def nb_gites(to_datetime = None, travelers = 14, input_data = None):
     if input_data is None:
-        from_datetime = datetime.now()
-        if to_datetime is None:
-            to_datetime = from_datetime + timedelta(days = 31*7)
-
-        to_datetime = to_datetime.replace(month = to_datetime.month+1, day = 2)
-
-        input_data = dict()
-        checkin = from_datetime
-        checkout = checkin + timedelta(days = 1)
-        progress_bar = tqdm(total = int((to_datetime-from_datetime).total_seconds()//86400))
-        while checkout < to_datetime:
-            input_data[checkin.isoformat()] = len(api_gites.GitesDeFrance(checkin, checkout, travelers))
-            checkin = checkout
-            checkout += timedelta(days = 1)
-            progress_bar.update(1)
-        progress_bar.close()
+        input_data = nb_gites_data(travelers, to_datetime = to_datetime)
     
     input_data = {datetime.fromisoformat(date): value for date, value in input_data.items()}
     trace = {
@@ -44,7 +49,7 @@ def nb_gites(to_datetime = None, travelers = 14, input_data = None):
 
     data = gos.Data([trace])
     layout = {
-    "title": "Nombre de gîtes disponibles sur gitesdefrance.com, mis à jour le {}".format(datetime.now().strftime("%d/%m/%Y à %H:%M")), 
+    "title": "Nombre de gîtes disponibles sur gitesdefrance.com pour {} personnes<br>Mis à jour le {}".format(travelers, datetime.now().strftime("%d/%m/%Y")), 
     "xaxis": {
         "title": "", 
         "mirror": True, 
@@ -75,7 +80,7 @@ def map_gites(gites):
         gite_locations["lat"].append(gite.location[0])
         gite_locations["lon"].append(gite.location[1])
         gite_locations["link"].append(gite.link)
-        gite_locations["text"].append("{} Chambres\n{} Personnes\n{}€".format(gite.chambres, gite.personnes, gite.price))
+        gite_locations["text"].append("{} Chambres<br>{} Personnes\n{}€".format(gite.chambres, gite.personnes, gite.price))
         
     data = [
         go.Scattermapbox(
