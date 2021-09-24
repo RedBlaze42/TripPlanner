@@ -14,6 +14,8 @@ if os.path.exists("config.json"):
         if "mapbox_key" in data.keys():
             mapbox_key = data["mapbox_key"]
 
+colors =  ["lime", "aqua", "yellow", "fuchsia", "darkorange", "purple", "tomato", "peru"]
+
 default_mapbox_layout = go.Layout(
     hovermode = 'closest',
     mapbox = dict(
@@ -193,4 +195,27 @@ def route(routes, end_marker_name):
 
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
+    return fig
+
+def covoit_routes_to_graph(covoits):
+    drivers = {driver_name: driver for driver_name, driver in covoits.items() if driver.is_driver}
+    if any([driver.route is None for driver_name, driver in drivers.items()]):
+        return None
+    
+    routes = list()
+
+    for i, (driver_name, driver) in enumerate(drivers.items()):
+
+        steps = list()
+        steps.append((driver.name, driver.location))
+        steps += [(passenger_name,covoits[passenger_name].location) for passenger_name in driver.passenger_names]
+        steps.append(("Gite", driver.destination))
+
+        routes.append([
+            driver.route,
+            {step_name: step_location for step_name, step_location in steps},
+            colors[i]
+        ])
+
+    fig = route(routes, "Gite")
     return fig
