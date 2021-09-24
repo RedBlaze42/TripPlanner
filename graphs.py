@@ -14,6 +14,21 @@ if os.path.exists("config.json"):
         if "mapbox_key" in data.keys():
             mapbox_key = data["mapbox_key"]
 
+default_mapbox_layout = go.Layout(
+    hovermode = 'closest',
+    mapbox = dict(
+        accesstoken = mapbox_key,
+        bearing = 0,
+        center = dict(
+            lat = 47.1,
+            lon = 2
+        ),
+        pitch = 0,
+        zoom = 5.7,
+        style = "streets" if mapbox_key is not None else "open-street-map"
+    )
+)
+
 def nb_gites_data(travelers, to_datetime = None):
     from_datetime = datetime.now()
     
@@ -104,28 +119,10 @@ def map_gites(gites):
         )
     ]
 
-    layout = go.Layout(
-        hovermode='closest',
-        mapbox = dict(
-            accesstoken = mapbox_key,
-            bearing = 0,
-            center = dict(
-                lat = 47.1,
-                lon = 2
-            ),
-            pitch = 0,
-            zoom = 5.7,
-            style = "outdoors"
-        )
-    )
-
     fig = go.Figure(
-        data=data,
-        layout=layout,
+        data = data,
+        layout = default_mapbox_layout,
     )
-
-    if mapbox_key is None:
-        fig.update_layout(mapbox_style="open-street-map")
     
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
@@ -192,23 +189,7 @@ def route(routes, end_marker_name):
         mode = "text+markers"
     ))
 
-    fig.layout = go.Layout(
-        hovermode = 'closest',
-        mapbox = dict(
-            accesstoken = mapbox_key,
-            bearing = 0,
-            center = dict(
-                lat = 47.1,
-                lon = 2
-            ),
-            pitch = 0,
-            zoom = 5.7,
-            style = "outdoors"
-        )
-    )
-    
-    if mapbox_key is None:
-        fig.update_layout(mapbox_style="open-street-map")
+    fig.layout = default_mapbox_layout
 
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
