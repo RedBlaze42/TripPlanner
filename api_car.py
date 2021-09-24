@@ -36,8 +36,8 @@ class Michelin():
         req = requests.get(url, params = data)
         req.raise_for_status()
         req_data = req.json()
-        print(req.content)
-        return req_data["locationList"][0]["location"]["id"]
+        
+        return req_data["locationList"]
 
     def directions(self, orig_id, dest_id, fuel_cost = 1.5):
         url = "https://secure-apir.viamichelin.com/apir/2/iti.json/fra"
