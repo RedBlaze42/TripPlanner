@@ -1,6 +1,9 @@
 from math import sin, cos, sqrt, atan2, radians
-import urllib.request, os, json
+import urllib.request, urllib.parse
+import os, json
 import time
+import paramiko, pysftp
+from base64 import decodebytes
 
 def distance_km(lat1, lon1, lat2, lon2):
     radius = 6373.0
@@ -47,3 +50,45 @@ class GeoCoder():
         
     def geocode(self, lat, lon):
         return min(self.villes.items(), key = lambda x : distance_km(x[1][0], x[1][1], lat, lon))[0]
+
+class SftpClient():
+
+    def __init__(self, config_path = "config.json"):
+        with open(config_path, "r") as f:
+            self.access_info = json.load(f)["sftp_access"]
+        key = paramiko.RSAKey(data=decodebytes(self.access_info["keydata"].encode("utf-8")))
+        self.cnopts = pysftp.CnOpts()
+        self.cnopts.hostkeys.add(self.access_info["host"], 'ssh-rsa', key)
+        self.remote_path = "/" + "/".join([path for path in self.access_info["html_root"].split("/") + self.access_info["path"].split("/") if path != ""])
+
+        with self.client as client:
+            client.makedirs(self.access_info["html_root"]+"/"+self.access_info["path"])
+        
+    @property
+    def client(self):
+        return pysftp.Connection(self.access_info["host"], username = self.access_info["username"], password = self.access_info["password"], port = 1560, cnopts = self.cnopts)
+
+    def upload_file(self, filename):
+        with self.client as client:
+            with client.cd(self.remote_path):
+                client.put(filename)
+        
+        return "http://" + "/".join([dirname for dirname in self.access_info["host"].split("/") + self.access_info["path"].split("/") + filename.split("/") if dirname != ""])
+
+    def list_dir(self):
+        with self.client as client:
+            file_list = client.listdir(self.remote_path)
+
+        return file_list
+
+    def remove_file(self, filename):
+        with self.client as client:
+            with client.cd(self.remote_path):
+                client.remove(filename)
+
+    def remove_all(self):
+        with self.client as client:
+            with client.cd(self.remote_path):
+                file_list = client.listdir(".")
+                for file in file_list:
+                    client.remove(file)
