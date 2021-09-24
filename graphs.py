@@ -152,7 +152,7 @@ def route(routes, end_marker_name):
     #routes is a list of: [route_from_openrouteservice.directions, {"step_name":[step_lat, step_lon]}, route_color]
     fig = go.Figure()
 
-    markers = dict()
+    markers = list()
     for route_data, steps, color in routes:
         lat, lon = [lat for lat, lon in route_data["route"]["geometry"]], [lon for lat, lon in route_data["route"]["geometry"]]
 
@@ -165,16 +165,16 @@ def route(routes, end_marker_name):
             hoverinfo = 'none',
             line_color = color
         ))
-        markers.update(steps)
+        markers += [{"name": name, "location": location, "color": "green" if i == 0 else "red" if i == len(steps) - 1 else "blue"} for i, (name, location) in enumerate(steps.items())]
 
 
     fig.add_trace(go.Scattermapbox(
-        lat = [lat for lat, lon in markers.values()],
-        lon = [lon for lat, lon in markers.values()],
-        text = [name for name, location in markers.items()],
+        lat = [marker["location"][0] for marker in markers],
+        lon = [marker["location"][1] for marker in markers],
+        text = [marker["name"] for marker in markers],
         name = "",
         marker_size = 15,
-        marker_color = ["green" if name != end_marker_name else "red" for name in markers.keys()],
+        marker_color = [marker["color"] for marker in markers],
         hoverinfo = "text",
         textposition='top right',
         textfont = dict(size=16, color='black'),
