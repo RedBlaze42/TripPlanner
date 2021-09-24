@@ -122,3 +122,12 @@ class OpenRouteService():
         data["route"]["geometry"] = polyline.decode(data["route"]["geometry"])
         
         return data
+
+    def set_driver_route(self, driver, covoits):
+        if not driver.is_driver and len(driver.passenger_names) == 0: return None
+        waypoints = [driver.location]
+        waypoints += [covoits[passenger_name].location for passenger_name in driver.passenger_names]
+        waypoints.append(driver.destination)
+
+        driver.route = self.directions(waypoints)
+        return driver.route

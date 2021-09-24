@@ -2,14 +2,16 @@
 
 class Covoit():
     
-    def __init__(self, name, location, is_driver, capacity = 5):
+    def __init__(self, name, location, is_driver, destination, capacity = 5):
         self.name = name
         self.location = location
         self.is_driver = is_driver
         self.capacity = capacity
+        self.destination = destination
         
         if self.is_driver:
             self.passenger_names = list()
+            self.route = None
         else:
             self.driver_name = None
         
