@@ -7,6 +7,13 @@ from plotly.offline import plot
 import plotly.graph_objs as gos
 from tqdm import tqdm
 
+mapbox_key = None
+if os.path.exists("config.json"):
+    with open("config.json") as f:
+        data = json.load(f)
+        if "mapbox_key" in data.keys():
+            mapbox_key = data["mapbox_key"]
+
 def nb_gites_data(travelers, to_datetime = None):
     from_datetime = datetime.now()
     
@@ -99,14 +106,16 @@ def map_gites(gites):
 
     layout = go.Layout(
         hovermode='closest',
-        mapbox=dict(
-        bearing=0,
-        center=dict(
-            lat=46,
-            lon=2
-        ),
-        pitch=0,
-        zoom=6,
+        mapbox = dict(
+            accesstoken = mapbox_key,
+            bearing = 0,
+            center = dict(
+                lat = 47.1,
+                lon = 2
+            ),
+            pitch = 0,
+            zoom = 5.7,
+            style = "outdoors"
         )
     )
 
@@ -115,10 +124,12 @@ def map_gites(gites):
         layout=layout,
     )
 
-    fig.update_layout(mapbox_style="open-street-map")
+    if mapbox_key is None:
+        fig.update_layout(mapbox_style="open-street-map")
+    
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
-    plot_div = plot(fig, output_type='div', include_plotlyjs=True)
+    plot_div = plot(fig, output_type = 'div', include_plotlyjs = True)
 
     res = re.search('<div id="([^"]*)"', plot_div)
     div_id = res.groups()[0]
@@ -176,7 +187,7 @@ def route(routes, end_marker_name):
         marker_size = 15,
         marker_color = [marker["color"] for marker in markers],
         hoverinfo = "text",
-        textposition='top right',
+        textposition='bottom center',
         textfont = dict(size=16, color='black'),
         mode = "text+markers"
     ))
@@ -184,17 +195,21 @@ def route(routes, end_marker_name):
     fig.layout = go.Layout(
         hovermode = 'closest',
         mapbox = dict(
-        bearing = 0,
-        center = dict(
-            lat = 47.4,
-            lon = 2
-        ),
-        pitch = 0,
-        zoom = 5.5,
+            accesstoken = mapbox_key,
+            bearing = 0,
+            center = dict(
+                lat = 47.1,
+                lon = 2
+            ),
+            pitch = 0,
+            zoom = 5.7,
+            style = "outdoors"
         )
     )
+    
+    if mapbox_key is None:
+        fig.update_layout(mapbox_style="open-street-map")
 
-    fig.update_layout(mapbox_style="open-street-map")
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
     return fig
