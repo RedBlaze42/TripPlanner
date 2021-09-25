@@ -48,8 +48,8 @@ class Covoit():
         
         self.trip_time = self.calculate_trip(matrix)
 
-        for i in range(len(self.passenger_names)):
-            covoits[self.passenger_names[i]].trip_time = self.calculate_trip(matrix, self.passenger_names[i:], start_step = self.passenger_names[i])
+        for i, passenger_name in enumerate(self.passenger_names):
+            covoits[passenger_name].trip_time = self.calculate_trip(matrix, self.passenger_names[i:], start_step = passenger_name)
 
     def set_trip_costs(self, matrix, covoits, total_cost):
         if not self.is_driver: return None
