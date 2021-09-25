@@ -19,7 +19,7 @@ class Covoit():
     def calculate_trip(self, matrix, passengers = None, key = "duration", start_step = None):
         trip_sum = 0
         
-        if passengers is None: passengers = self.passenger_names
+        if passengers is None and self.is_driver: passengers = self.passenger_names
         
         previous_step = self.name if start_step is None else start_step
         for passenger in passengers:
