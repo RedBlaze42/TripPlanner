@@ -49,7 +49,7 @@ class Michelin():
 
         req = requests.get(url, params = data)
         req.raise_for_status()
-        data = json.loads(req.content[req.content.decode("utf-8").index("{"):-1])
+        data = req.json()
         
         if not "header" in data.keys():
             print(data)
@@ -64,6 +64,35 @@ class Michelin():
         }
 
         return output
+
+    def trip_directions(self, waypoints, fuel_cost = 1.5):
+        url = "https://vmrest.viamichelin.com/apir/11/iti.json/eng/geom;header"
+        data = {
+            "stepList": "".join(["1:e:{}:{};".format(waypoint[1], waypoint[0]) for waypoint in waypoints]),
+            "fuelCost": fuel_cost, "fuelConsump":"7.9:6.9:7", "authKey": self.auth_key,
+            "distUnit":"m","itit":0,"veht":0,"avoidExpressWays":False,"avoidBorders":False,"avoidTolls":False,"avoidCCZ":False,"avoidORC":False,"avoidPass":False,"avoidClosedRoad":True,"currency":"EUR","data":"geom;header;roadsheet","favMotorways":False,"fuelCost":fuel_cost,"itineraryFuelType":"petrol","fullMapOpt":"300:300:true:true:true","indemnite":0,"stepMapOpt":"300:300:true:true:true","traffic":"ALL","isCostFctUsingTraffic":False,"sortFDRsByTraffic":False,"itineraryVehiculeType":"hatchback","wCaravan":False,"withSecurityAdv":False,"shouldUseNewEngine":False,"shouldUseTraffic":False,"costCategory":"car","isMotorVehicle":True,"lg":"eng","obfuscation":False,"charset":"UTF-8","ie":"UTF-8","nocache":1632567830744,"protocol":"https","callback":"JSE.HTTP.asyncRequests[3]._scriptLoaded"
+        }
+        
+        req = requests.get(url, params = data)
+        req.raise_for_status()
+        data = json.loads(req.content[req.content.decode("utf-8").index("{"):-1])
+        
+        if not "itineraryList" in data.keys():
+            print(data)
+            return None
+        
+        data = data["itineraryList"][0]
+
+        output = {
+            "fuel_cost": round(data["header"]["summaryList"][0]["consumption"], 2),
+            "toll_cost": round(data["header"]["summaryList"][0]["tollCost"]["car"]/100, 2),
+            "total_cost": round(data["header"]["summaryList"][0]["consumption"] + data["header"]["summaryList"][0]["tollCost"]["car"]/100, 2),
+            "distance_km": int(data["header"]["summaryList"][0]["drivingDist"]/1000),
+            "time":data["header"]["summaryList"][0]["drivingTime"]
+        }
+
+        return output
+
 
 class OpenRouteService():
     
