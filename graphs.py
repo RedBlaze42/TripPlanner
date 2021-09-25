@@ -57,10 +57,10 @@ def nb_gites(to_datetime = None, travelers = 14, input_data = None):
     
     input_data = {datetime.fromisoformat(date): value for date, value in input_data.items()}
     trace = {
-    "type": "heatmap",
-    "colorbar": {"title": "gites"}, 
-    "hoverinfo": "text", 
-    "colorscale": "thermal" #[[0,"rgb(255, 0, 0)"],[1,"rgb(0, 255, 0)"]]
+        "type": "heatmap",
+        "colorbar": {"title": "gites"},
+        "hoverinfo": "text",
+        "colorscale": "thermal" #[[0,"rgb(255, 0, 0)"],[1,"rgb(0, 255, 0)"]]
     }
 
     trace["x"] = [int(date.strftime("%m"))+12 if int(date.strftime("%m"))<int(datetime.now().strftime("%m")) else int(date.strftime("%m")) for date, value in input_data.items()]
