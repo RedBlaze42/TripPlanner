@@ -121,7 +121,6 @@ class OpenRouteService():
             matrix_data[name_source] = dict()
             
             for name_dest, location_dest in destinations.items():
-                if name_dest == name_source: continue
                 
                 dest_id = destinations_list.index(location_dest[::-1])
                 

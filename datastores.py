@@ -9,6 +9,7 @@ class Covoit():
         self.capacity = capacity
         self.destination = destination
         self.trip_cost = None
+        self.trip_time = None
         
         if self.is_driver:
             self.passenger_names = list()
@@ -42,7 +43,15 @@ class Covoit():
             
             return self.calculate_trip(matrix, key = key) - self.calculate_trip(matrix, passengers = temp_passengers)
 
-    def set_trip_costs(self, covoits, matrix, total_cost):
+    def set_trip_times(self, matrix, covoits):
+        if not self.is_driver: return None
+        
+        self.trip_time = self.calculate_trip(matrix)
+
+        for i in range(len(self.passenger_names)):
+            covoits[self.passenger_names[i]].trip_time = self.calculate_trip(matrix, self.passenger_names[i:], start_step = self.passenger_names[i])
+
+    def set_trip_costs(self, matrix, covoits, total_cost):
         if not self.is_driver: return None
 
         total_distance = sum([matrix[passenger_name]["__end__"]["distance"] for passenger_name in self.passenger_names])
