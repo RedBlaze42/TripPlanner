@@ -73,25 +73,25 @@ def nb_gites(to_datetime = None, travelers = 14, input_data = None):
 
     data = gos.Data([trace])
     layout = {
-    "title": "Nombre de gîtes disponibles sur gitesdefrance.com pour {} personnes<br>Mis à jour le {}".format(travelers, datetime.now().strftime("%d/%m/%Y")), 
-    "xaxis": {
-        "title": "", 
-        "mirror": True, 
-        "ticklen": 0, 
-        "showline": True, 
-        "tickmode": "array", 
-        "ticktext": ["Janvier","Février","Mars","Avril","Mai","Juin","Août","Septembre","Octobre","Novembre","Décembre"]*2,
-        "tickvals": [i+2 for i in range(22)]
-    }, 
-    "yaxis": {
-        "title": "", 
-        "mirror": True, 
-        "showline": True,
-        "autorange": "reversed",
-        "tickmode": "array", 
-        "ticktext": [str(day+1) for day in range(31)], 
-        "tickvals": [int(day+1) for day in range(31)]
-    }
+        "title": "Nombre de gîtes disponibles sur gitesdefrance.com pour {} personnes<br>Mis à jour le {}".format(travelers, datetime.now().strftime("%d/%m/%Y")), 
+        "xaxis": {
+            "title": "", 
+            "mirror": True, 
+            "ticklen": 0, 
+            "showline": True, 
+            "tickmode": "array", 
+            "ticktext": ["Janvier","Février","Mars","Avril","Mai","Juin","Août","Septembre","Octobre","Novembre","Décembre"]*2,
+            "tickvals": [i+2 for i in range(22)]
+        }, 
+        "yaxis": {
+            "title": "", 
+            "mirror": True, 
+            "showline": True,
+            "autorange": "reversed",
+            "tickmode": "array", 
+            "ticktext": [str(day+1) for day in range(31)], 
+            "tickvals": [int(day+1) for day in range(31)]
+        }
     }
     fig = gos.Figure(data=data, layout=layout)
     
