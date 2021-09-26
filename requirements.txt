@@ -4,3 +4,4 @@ ortools
 beautifulsoup4
 tqdm
 pysftp
+gspread
