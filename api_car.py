@@ -168,8 +168,7 @@ class OpenRouteService():
             "api_key": self.api_key,
             "boundary.circle.lat": 47.051133,
             "boundary.circle.lon": 2.512952,
-            "boundary.circle.radius": 600,
-            "layers": "county"
+            "boundary.circle.radius": 600
         }
         
         req = self.session.get(url, params = params)
@@ -180,9 +179,14 @@ class OpenRouteService():
         if len(raw_data["features"]) == 0: return None
         
         feature = raw_data["features"][0]
+        properties = feature["properties"]
         output = {
             "location": feature["geometry"]["coordinates"][::-1],
-            "name": "{}, {}, {}".format(feature["properties"]["county"], feature["properties"]["region"], feature["properties"]["country"])
+            "name": "{}{}{}".format(
+                properties["county"]+", " if "county" in properties.keys() else properties["name"]+", " if "name" in properties.keys() else "",
+                properties["region"]+", " if "region" in properties.keys() else "",
+                properties["country"]+", " if "country" in properties.keys() else ""
+            )
         }
         
         return output      
