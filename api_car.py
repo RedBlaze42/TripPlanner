@@ -1,4 +1,4 @@
-import requests, json, time, polyline
+import requests, json, time, polyline, ratelimit
 from utils import distance_km
 
 class Michelin():
@@ -102,7 +102,8 @@ class OpenRouteService():
         self.session = requests.Session()
         self.session.headers.update({'Authorization': self.api_key, "Accept": "application/json"})
             
-            
+    @ratelimit.sleep_and_retry
+    @ratelimit.limits(calls = 40, period = 120)
     def matrix(self, destinations):
         url = "https://api.openrouteservice.org/v2/matrix/driving-car"
         
@@ -133,6 +134,8 @@ class OpenRouteService():
         
         return matrix_data
     
+    @ratelimit.sleep_and_retry
+    @ratelimit.limits(calls = 30, period = 60)
     def directions(self, waypoints):
         url = "https://api.openrouteservice.org/v2/directions/driving-car"
         
@@ -160,6 +163,8 @@ class OpenRouteService():
         driver.route = self.directions(waypoints)
         return driver.route
     
+    @ratelimit.sleep_and_retry
+    @ratelimit.limits(calls = 100, period = 120)
     def geocode(self, query):
         url = "https://api.openrouteservice.org/geocode/search"
         
