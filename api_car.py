@@ -98,9 +98,9 @@ class OpenRouteService():
     
     def __init__(self, config_path = "config.json"):
         with open(config_path, "r") as f:
-            self.key = json.load(f)["openrouteservice_key"]
+            self.api_key = json.load(f)["openrouteservice_key"]
         self.session = requests.Session()
-        self.session.headers.update({'Authorization': self.key, "Accept": "application/json"})
+        self.session.headers.update({'Authorization': self.api_key, "Accept": "application/json"})
             
             
     def matrix(self, destinations):
@@ -159,3 +159,30 @@ class OpenRouteService():
 
         driver.route = self.directions(waypoints)
         return driver.route
+    
+    def geocode(self, query):
+        url = "https://api.openrouteservice.org/geocode/search"
+        
+        params = {
+            "text": query,
+            "api_key": self.api_key,
+            "boundary.circle.lat": 47.051133,
+            "boundary.circle.lon": 2.512952,
+            "boundary.circle.radius": 600,
+            "layers": "county"
+        }
+        
+        req = self.session.get(url, params = params)
+        req.raise_for_status()
+        
+        raw_data = req.json()
+        
+        if len(raw_data["features"]) == 0: return None
+        
+        feature = raw_data["features"][0]
+        output = {
+            "location": feature["geometry"]["coordinates"][::-1],
+            "name": "{}, {}, {}".format(feature["properties"]["county"], feature["properties"]["region"], feature["properties"]["country"])
+        }
+        
+        return output      
