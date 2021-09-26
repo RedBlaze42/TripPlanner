@@ -97,7 +97,7 @@ def nb_gites(to_datetime = None, travelers = 14, input_data = None):
     
     return fig
 
-def map_gites(gites):
+def map_gites(gites, participants_dict = None):
     gite_locations = {"lat":list(), "lon": list(), "text": list(), "link": list()}
 
     for gite in tqdm(gites):
@@ -108,18 +108,35 @@ def map_gites(gites):
         
     data = [
         go.Scattermapbox(
-            lat=gite_locations["lat"],
-            lon=gite_locations["lon"],
-            mode='markers',
-            marker=dict(
-                size=14
+            lat = gite_locations["lat"],
+            lon = gite_locations["lon"],
+            mode = 'markers',
+            marker = dict(
+                size = 10,
+                color = "red"
             ),
-            name="gites",
+            name = "Gîtes",
             hovertemplate = "%{text}",
-            text=gite_locations["text"],
-            customdata=gite_locations["link"]
+            text = gite_locations["text"],
+            customdata = gite_locations["link"]
         )
     ]
+
+    if participants_dict is not None:
+        data.append(
+            go.Scattermapbox(
+                lat = [location[0] for name, location in participants_dict.items()],
+                lon = [location[1] for name, location in participants_dict.items()],
+                text = [name for name, location in participants_dict.items()],
+                hoverinfo = "text",
+                name = "Participants",
+                textposition='bottom center',
+                textfont = dict(size = 16, color = 'black'),
+                mode = "text+markers",
+                marker_size = 14,
+                marker_color = "green"
+            )
+        )
 
     fig = go.Figure(
         data = data,
