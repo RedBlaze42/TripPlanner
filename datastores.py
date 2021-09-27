@@ -6,12 +6,12 @@ class Covoit():
         self.name = name
         self.location = location
         self.is_driver = is_driver
-        self.capacity = capacity
         self.destination = destination
         self.trip_cost = None
         self.trip_time = None
         
         if self.is_driver:
+            self.capacity = capacity
             self.passenger_names = list()
             self.route = None
         else:
