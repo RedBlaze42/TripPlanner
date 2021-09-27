@@ -43,8 +43,7 @@ class TrainStations():
             uic = int(station["fields"]["uic_code"])
             gare_dict = {
                 "name": station["fields"]["gare_alias_libelle_noncontraint"],
-                "lat": station["fields"]["wgs_84"][0],
-                "lon": station["fields"]["wgs_84"][1],
+                "location": station["fields"]["wgs_84"],
                 "city": station["fields"]["commune_libellemin"],
                 "affluence": affluence_data[uic] if uic in affluence_data.keys() else 0,
                 "uic_code": uic
@@ -54,8 +53,9 @@ class TrainStations():
         with open("sncf_gares.json", "w", encoding="utf-8") as f:
             json.dump(self.stations, f)
 
-    def find_closest_station(self, lat, lon):
-        station_distances = [(station, distance_km(lat, lon, station["lat"], station["lon"])) for station in self.stations]
+    def find_closest_station(self, location, min_affluence = 0):
+        lat, lon = location[0], location[1]
+        station_distances = [(station, distance_km(lat, lon, station["location"][0], station["location"][1])) for station in self.stations if station["affluence"] > min_affluence]
         return min(station_distances, key = lambda x: x[1])[0]
 
 if __name__ == "__main__":
