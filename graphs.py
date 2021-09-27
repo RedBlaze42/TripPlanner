@@ -1,4 +1,4 @@
-import api_gites
+import api_gites, datastores
 import json, os, re
 from datetime import datetime, timedelta
 import plotly.express as px
@@ -175,46 +175,7 @@ def map_gites(gites, participants_dict = None):
 
     return fig, html_str
 
-def route(routes, end_marker_name):
-    #routes is a list of: [route_from_openrouteservice.directions, {"step_name":[step_lat, step_lon]}, route_color]
-    fig = go.Figure()
-
-    markers = list()
-    for route_data, steps, color in routes:
-        lat, lon = [lat for lat, lon in route_data["route"]["geometry"]], [lon for lat, lon in route_data["route"]["geometry"]]
-
-        fig.add_trace(go.Scattermapbox(
-            lat = lat,
-            lon = lon,
-            line_width = 5,
-            mode = "lines",
-            showlegend = False,
-            hoverinfo = 'none',
-            line_color = color
-        ))
-        markers += [{"name": name, "location": location, "color": "green" if i == 0 else "red" if i == len(steps) - 1 else "blue"} for i, (name, location) in enumerate(steps.items())]
-
-
-    fig.add_trace(go.Scattermapbox(
-        lat = [marker["location"][0] for marker in markers],
-        lon = [marker["location"][1] for marker in markers],
-        text = [marker["name"] for marker in markers],
-        name = "",
-        marker_size = 15,
-        marker_color = [marker["color"] for marker in markers],
-        hoverinfo = "text",
-        textposition='bottom center',
-        textfont = dict(size=16, color='black'),
-        mode = "text+markers"
-    ))
-
-    fig.layout = default_mapbox_layout
-
-    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-
-    return fig
-
-def covoit_routes_to_graph(covoits):
+def covoit_route(covoits):
     drivers = {driver_name: driver for driver_name, driver in covoits.items() if driver.is_driver}
     if any([driver.route is None for driver_name, driver in drivers.items()]):
         return None
@@ -234,5 +195,120 @@ def covoit_routes_to_graph(covoits):
             colors[i]
         ])
 
-    fig = route(routes, "Gite")
+    fig = go.Figure()
+
+    markers = list()
+    for route_data, steps, color in routes:
+        lat, lon = [lat for lat, lon in route_data["route"]["geometry"]], [lon for lat, lon in route_data["route"]["geometry"]]
+
+        fig.add_trace(
+            go.Scattermapbox(
+                lat = lat,
+                lon = lon,
+                line_width = 5,
+                mode = "lines",
+                showlegend = True,
+                name = list(steps.keys())[0],
+                hoverinfo = 'none',
+                line_color = color
+            )
+        )
+
+        for i, (name, location) in enumerate(steps.items()):
+            if not (name in covoits.keys() and isinstance(covoits[name], datastores.TrainUser)):
+                markers.append({
+                    "name": name,
+                    "location": location,
+                    "type": "driver" if i == 0 else "end" if i == len(steps) - 1 else "passenger"
+                })
+            else:
+                markers.append({
+                    "name": name,
+                    "location": covoits[name].departure_location,
+                    "type": "passenger"
+                })
+
+    fig.add_trace(
+        go.Scattermapbox(
+            lat = [marker["location"][0] for marker in markers if marker["type"] == "driver"],
+            lon = [marker["location"][1] for marker in markers if marker["type"] == "driver"],
+            text = [marker["name"] for marker in markers if marker["type"] == "driver"],
+            name = "Conducteurs",
+            marker_size = 15,
+            marker_color = "green",
+            hoverinfo = "text",
+            textposition="bottom center",
+            textfont = dict(size=12, color="black"),
+            mode = "text+markers"
+        )
+    )
+
+    if sum([1 for covoit_name, covoit in covoits.items() if isinstance(covoit, datastores.TrainUser)]) > 0:
+        train_users = {covoit_name: covoit for covoit_name, covoit in covoits.items() if isinstance(covoit, datastores.TrainUser)}
+        train_stations = {covoit.train_station["name"]: covoit.train_station for name, covoit in train_users.items()}
+        print([station["name"] for station_name, station in train_stations.items()], [station["location"][0] for station_name, station in train_stations.items()], [station["location"][1] for station_name, station in train_stations.items()])
+        fig.add_trace(
+            go.Scattermapbox(
+                lat = [station["location"][0] for station_name, station in train_stations.items()],
+                lon = [station["location"][1] for station_name, station in train_stations.items()],
+                text = [station["name"] for station_name, station in train_stations.items()],
+                name = "Gare",
+                marker_size = 15,
+                marker_color = "black",
+                hoverinfo = "text",
+                textposition="bottom center",
+                textfont = dict(size=12, color="black"),
+                mode = "text+markers"
+            )
+        )
+        end_location = [marker for marker in markers if marker["type"] == "end"][0]
+        for covoit_name, covoit in train_users.items():
+            fig.add_trace(
+                go.Scattermapbox(
+                    lat = [covoit.departure_location[0], covoit.train_station["location"][0]],
+                    lon = [covoit.departure_location[1], covoit.train_station["location"][1]],
+                    line_width = 3,
+                    mode = "lines",
+                    showlegend = False,
+                    hoverinfo = "none",
+                    line = dict(color = "black"),
+                    name = "Trains"
+                )
+            )
+
+    fig.add_trace(
+        go.Scattermapbox(
+            lat = [marker["location"][0] for marker in markers if marker["type"] == "passenger"],
+            lon = [marker["location"][1] for marker in markers if marker["type"] == "passenger"],
+            text = [marker["name"] for marker in markers if marker["type"] == "passenger"],
+            name = "Passagers",
+            marker_size = 15,
+            marker_color = "blue",
+            hoverinfo = "text",
+            textposition="bottom center",
+            textfont = dict(size=12, color="black"),
+            mode = "text+markers"
+        )
+    )
+            
+    fig.add_trace(
+        go.Scattermapbox(
+            lat = [marker["location"][0] for marker in markers if marker["type"] == "end"],
+            lon = [marker["location"][1] for marker in markers if marker["type"] == "end"],
+            text = [marker["name"] for marker in markers if marker["type"] == "end"],
+            name = "Gîte",
+            marker_size = 15,
+            marker_color = "red",
+            hoverinfo = "text",
+            textposition="bottom center",
+            textfont = dict(size=12, color="black"),
+            mode = "text+markers"
+        )
+    )
+
+
+    fig.layout = default_mapbox_layout
+
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
     return fig
