@@ -23,6 +23,8 @@ class CovoitCalculator():
     
     @destination.setter
     def destination(self, destination):
+        for covoit_name, covoit in self.covoits.items():
+            covoit.destination = destination
         self.destinations["__end__"] = destination
     
     @property
