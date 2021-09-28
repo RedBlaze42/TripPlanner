@@ -136,7 +136,7 @@ class OpenRouteService():
     
     @ratelimit.sleep_and_retry
     @ratelimit.limits(calls = 30, period = 60)
-    def directions(self, waypoints):
+    def route(self, waypoints):
         url = "https://api.openrouteservice.org/v2/directions/driving-car"
         
         data = {
@@ -160,7 +160,7 @@ class OpenRouteService():
         waypoints += [covoits[passenger_name].location for passenger_name in driver.passenger_names]
         waypoints.append(driver.destination)
 
-        driver.route = self.directions(waypoints)
+        driver.route = self.route(waypoints)
         return driver.route
     
     @ratelimit.sleep_and_retry
