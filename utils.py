@@ -1,12 +1,13 @@
-from math import sin, cos, sqrt, atan2, radians
+from math import sin, cos, sqrt, atan2, radians, asin, degrees
 import urllib.request, urllib.parse
 import os, json
 import time
 import paramiko, pysftp
 from base64 import decodebytes
 
+radius = 6373.0
+
 def distance_km(lat1, lon1, lat2, lon2):
-    radius = 6373.0
     lat1, lon1 = radians(lat1), radians(lon1)
     lat2, lon2 = radians(lat2), radians(lon2)
     dlon = lon1 - lon2
@@ -15,6 +16,38 @@ def distance_km(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
     return c * radius
+
+def get_line_bearing(lat1, lon1, lat2, lon2):
+    lat1, lon1 = radians(lat1), radians(lon1)
+    lat2, lon2 = radians(lat2), radians(lon2)
+    dlat = lon2-lon1
+    val_rad = atan2( sin(dlat)*cos(lat2) , cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dlat))
+    return val_rad
+
+def point_bearing_distance(lat, lon, bearing, distance):
+    lat, lon = radians(lat), radians(lon)
+    point_lat = asin( sin(lat)*cos(distance/radius) + cos(lat)*sin(distance/radius)*cos(bearing))
+    point_lon = lon + atan2(sin(bearing)*sin(distance/radius)*cos(lat), cos(distance/radius)-sin(lat)*sin(point_lat))
+    return degrees(point_lat), degrees(point_lon)
+
+def interpolate_segment(from_point, to_point, step_km = 5):
+    points = list()
+    segment_distance = distance_km(from_point[0], from_point[1], to_point[0], to_point[1])
+    bearing = get_line_bearing(from_point[0], from_point[1], to_point[0], to_point[1])
+
+    for distance in range(0, int(segment_distance), step_km):
+        points.append(list(point_bearing_distance(from_point[0], from_point[1], bearing, distance)))
+
+    return points
+
+def interpolate_segments(points, step_km = 5):
+    output = [points[0],]
+    for point in points[1:]:
+        print(output, point)
+        output += interpolate_segment(output[-1], point, step_km = step_km)
+        output.append(point)
+
+    return output
 
 def is_in_france(lat, lon):
     return distance_km(46.452547, 2.404213, lat, lon) < 600
