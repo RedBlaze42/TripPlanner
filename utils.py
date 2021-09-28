@@ -43,7 +43,6 @@ def interpolate_segment(from_point, to_point, step_km = 5):
 def interpolate_segments(points, step_km = 5):
     output = [points[0],]
     for point in points[1:]:
-        print(output, point)
         output += interpolate_segment(output[-1], point, step_km = step_km)
         output.append(point)
 
