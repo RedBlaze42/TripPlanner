@@ -1,6 +1,20 @@
 import requests, json, time, polyline, ratelimit
 from utils import distance_km
 
+def extract_michelin_points(points, data):
+    white_list = ["C", "V", "P", "lim", "eTrafic"]
+    if len(data) > 1 and data[0] in white_list and isinstance(data[1], dict) and "latitude" in data[1].keys() and "longitude" in data[1].keys():
+        points.append([data[1]["latitude"], data[1]["longitude"]])
+    else:
+        return points
+    
+    for entry in data:
+        if isinstance(entry, list) and len(entry) > 0:
+            for entry2 in entry:
+                if isinstance(entry2, list) and len(entry2) > 0:
+                    extract_michelin_points(points, entry2)
+    return points
+
 class Michelin():
     
     def __init__(self, auth_key = None):
@@ -57,12 +71,18 @@ class Michelin():
         
         data = data["itineraryList"][0]
 
+        points = list()
+
+        for entry in data["roadSheet"][0]:
+            extract_michelin_points(points, entry)
+
         output = {
             "fuel_cost": round(data["header"]["summaryList"][0]["consumption"], 2),
             "toll_cost": round(data["header"]["summaryList"][0]["tollCost"]["car"]/100, 2),
             "total_cost": round(data["header"]["summaryList"][0]["consumption"] + data["header"]["summaryList"][0]["tollCost"]["car"]/100, 2),
             "distance_km": int(data["header"]["summaryList"][0]["drivingDist"]/1000),
-            "time":data["header"]["summaryList"][0]["drivingTime"]
+            "time":data["header"]["summaryList"][0]["drivingTime"],
+            "points": points
         }
 
         return output
