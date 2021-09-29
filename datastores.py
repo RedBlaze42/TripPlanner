@@ -16,6 +16,14 @@ class Covoit():
             self.route = None
         else:
             self.driver_name = None
+
+    def waypoints(self, covoits):
+        if not self.is_driver: return None
+        waypoints = [self.location,]
+        waypoints += [covoits[passenger_name].location for passenger_name in self.passenger_names]
+        waypoints.append(self.destination)
+
+        return waypoints
         
     def calculate_trip(self, matrix, passengers = None, key = "duration", start_step = None):
         trip_sum = 0
