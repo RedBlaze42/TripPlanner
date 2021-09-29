@@ -116,7 +116,6 @@ class TrainStations():
         return output
 
 def get_closest_station_to_segment(from_station, stations, segments, driver_coeff = 3, train_coeff = 1.5):
-    output = dict()
     min_station = (-1, None)
 
     destination = segments[0][-1]
