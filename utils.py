@@ -17,6 +17,14 @@ def distance_km(from_point, to_point):
 
     return c * radius
 
+def trace_distance_km(trace):
+    distance_sum = 0
+    prev_point = trace[0]
+    for point in trace[1:]:
+        distance_sum += distance_km(prev_point, point)
+
+    return distance_sum
+
 def get_line_bearing(lat1, lon1, lat2, lon2):
     lat1, lon1 = radians(lat1), radians(lon1)
     lat2, lon2 = radians(lat2), radians(lon2)
