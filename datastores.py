@@ -70,7 +70,21 @@ class Covoit():
                 covoits[passenger_name].trip_cost = (matrix[passenger_name]["__end__"]["distance"] / total_distance) * total_cost
 
 class TrainUser(Covoit):
-    def __init__(self, name, departure_location, train_station, destination):
+    def __init__(self, name, departure_location, destination, train_station = None, station_radius = 20):
         self.departure_location = departure_location
+
+        self._train_station = None
+        super().__init__(name, None, False, destination)
+        
         self.train_station = train_station
-        super().__init__(name, train_station["location"], False, destination)
+        self.station_radius = station_radius
+
+    @property
+    def train_station(self):
+        return self._train_station
+
+    @train_station.setter
+    def train_station(self, train_station):
+        if train_station is None: return
+        self._train_station = train_station
+        self.location = train_station["location"]
