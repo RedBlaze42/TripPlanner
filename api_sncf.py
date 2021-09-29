@@ -1,5 +1,5 @@
 import json, csv, os, urllib.request, zipfile
-from utils import distance_km
+from utils import distance_km, trace_distance_km
 
 def _download_if_not_exist(url, path):
     if not os.path.exists(path):
@@ -107,3 +107,23 @@ class TrainStations():
         stations = {station for route_name, station in self.gtfs if route_name in routes}
 
         return [self.stations[str(uic)] for uic in stations if str(uic) in self.stations.keys()]
+
+    def get_connected_stations_from_radius(self, location, radius):
+        stations = self.get_stations_in_radius(location, radius)
+        output = list()
+        for station in stations:
+            output += self.get_connected_station(station)
+        return output
+
+def get_closest_station_to_segment(from_station, stations, segments, driver_coeff = 3):
+    output = dict()
+    min_station = (-1, None)
+
+    for segment in segments:
+        for point in segment:
+            for station in stations:
+                value = distance_km(from_station, station["location"]) + distance_km(station["location"], point) * driver_coeff + distance_km(station["location"], segment[-1])
+                if value < min_station[0] or min_station[0] == -1:
+                    min_station = (value, station)
+
+    return min_station[1]
