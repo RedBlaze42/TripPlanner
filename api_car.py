@@ -36,7 +36,7 @@ class Michelin():
             loc_distances = list()
             for location in req_data["locationList"]:
                 coords = location["location"]["coords"]
-                loc_distances.append((location["location"]["id"], distance_km(coords["lat"], coords["lon"], point[0], point[1])))
+                loc_distances.append((location["location"]["id"], distance_km([coords["lat"], coords["lon"]], point)))
 
             return min(loc_distances, key = lambda x: x[1])[0]
     

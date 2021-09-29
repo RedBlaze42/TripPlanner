@@ -7,9 +7,9 @@ from base64 import decodebytes
 
 radius = 6373.0
 
-def distance_km(lat1, lon1, lat2, lon2):
-    lat1, lon1 = radians(lat1), radians(lon1)
-    lat2, lon2 = radians(lat2), radians(lon2)
+def distance_km(from_point, to_point):
+    lat1, lon1 = radians(from_point[0]), radians(from_point[1])
+    lat2, lon2 = radians(to_point[0]), radians(to_point[1])
     dlon = lon1 - lon2
     dlat = lat1 - lat2
     a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
@@ -32,7 +32,7 @@ def point_bearing_distance(lat, lon, bearing, distance):
 
 def interpolate_segment(from_point, to_point, step_km = 5):
     points = list()
-    segment_distance = distance_km(from_point[0], from_point[1], to_point[0], to_point[1])
+    segment_distance = distance_km(from_point, to_point)
     bearing = get_line_bearing(from_point[0], from_point[1], to_point[0], to_point[1])
 
     for distance in range(0, int(segment_distance), step_km):
@@ -49,7 +49,7 @@ def interpolate_segments(points, step_km = 5):
     return output
 
 def is_in_france(lat, lon):
-    return distance_km(46.452547, 2.404213, lat, lon) < 600
+    return distance_km([46.452547, 2.404213], [lat, lon]) < 600
 
 def format_seconds(seconds, show_seconds=False):
     output = ""
@@ -81,7 +81,7 @@ class GeoCoder():
             self.villes[ville["fields"]["nom_de_la_commune"]] = ville["fields"]["coordonnees_gps"]
         
     def geocode(self, lat, lon):
-        return min(self.villes.items(), key = lambda x : distance_km(x[1][0], x[1][1], lat, lon))[0]
+        return min(self.villes.items(), key = lambda x : distance_km(x[1], [lat, lon]))[0]
 
 class SftpClient():
 

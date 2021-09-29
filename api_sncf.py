@@ -95,11 +95,11 @@ class TrainStations():
 
     def find_closest_station(self, location, min_affluence = 0):
         lat, lon = location[0], location[1]
-        station_distances = [(station, distance_km(lat, lon, station["location"][0], station["location"][1])) for uic, station in self.stations.items() if station["affluence"] > min_affluence]
+        station_distances = [(station, distance_km([lat, lon], station["location"])) for uic, station in self.stations.items() if station["affluence"] > min_affluence]
         return min(station_distances, key = lambda x: x[1])[0]
 
     def get_stations_in_radius(self, location, radius):
-        return [station for station_uic, station in self.stations.items() if distance_km(station["location"][0], station["location"][1], location[0], location[1]) < radius]
+        return [station for station_uic, station in self.stations.items() if distance_km(station["location"], location) < radius]
 
     def get_connected_station(self, station):
         uic = int(station["uic_code"])
