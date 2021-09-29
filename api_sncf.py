@@ -1,5 +1,5 @@
 import json, csv, os, urllib.request, zipfile
-from utils import distance_km, trace_distance_km
+from utils import distance_km, trace_distance_km, min_distance_km_np
 
 def _download_if_not_exist(url, path):
     if not os.path.exists(path):
@@ -115,15 +115,25 @@ class TrainStations():
             output += self.get_connected_station(station)
         return output
 
-def get_closest_station_to_segment(from_station, stations, segments, driver_coeff = 3):
+def get_closest_station_to_segment(from_station, stations, segments, driver_coeff = 3, train_coeff = 1.5):
     output = dict()
     min_station = (-1, None)
 
-    for segment in segments:
-        for point in segment:
-            for station in stations:
-                value = distance_km(from_station, station["location"]) + distance_km(station["location"], point) * driver_coeff + distance_km(station["location"], segment[-1])
-                if value < min_station[0] or min_station[0] == -1:
-                    min_station = (value, station)
+    destination = segments[0][-1]
+
+    for station in stations:
+        station_distance = distance_km(from_station, station["location"])
+        segment_distance = distance_km(station["location"], destination)
+
+        lat2 = [point[0] for segment in segments for point in segment]
+        lon2 = [point[1] for segment in segments for point in segment]
+        lat1 = [station["location"][0]]*len(lat2)
+        lon1 = [station["location"][1]]*len(lon2)
+
+        distances = min_distance_km_np(lat1, lon1, lat2, lon2)
+        min_dist = distances * driver_coeff + station_distance * train_coeff + segment_distance
+        if min_dist < min_station[0] or min_station[0] == -1:
+            min_station = (min_dist, station)
+
 
     return min_station[1]

@@ -4,6 +4,7 @@ import os, json
 import time
 import paramiko, pysftp
 from base64 import decodebytes
+import numpy as np
 
 radius = 6373.0
 
@@ -16,6 +17,19 @@ def distance_km(from_point, to_point):
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
     return c * radius
+
+def min_distance_km_np(lat1, lon1, lat2, lon2):
+    lon1, lat1, lon2, lat2 = map(np.array, [lon1, lat1, lon2, lat2])
+    lon1, lat1, lon2, lat2 = map(np.radians, [lon1, lat1, lon2, lat2])
+
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+
+    a = np.sin(dlat/2.0)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon/2.0)**2
+
+    c = 2 * np.arcsin(np.sqrt(a))
+    km = 6373 * c
+    return np.min(km)
 
 def trace_distance_km(trace):
     distance_sum = 0
