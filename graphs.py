@@ -246,7 +246,7 @@ def covoit_route(covoits):
     if sum([1 for covoit_name, covoit in covoits.items() if isinstance(covoit, datastores.TrainUser)]) > 0:
         train_users = {covoit_name: covoit for covoit_name, covoit in covoits.items() if isinstance(covoit, datastores.TrainUser)}
         train_stations = {covoit.train_station["name"]: covoit.train_station for name, covoit in train_users.items()}
-        print([station["name"] for station_name, station in train_stations.items()], [station["location"][0] for station_name, station in train_stations.items()], [station["location"][1] for station_name, station in train_stations.items()])
+        
         fig.add_trace(
             go.Scattermapbox(
                 lat = [station["location"][0] for station_name, station in train_stations.items()],
