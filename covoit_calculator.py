@@ -120,8 +120,9 @@ class CovoitCalculator():
         segments = list()
 
         for driver_name, driver in self.drivers.items():
-            directions = self.api_michelin.directions(driver.waypoints(self.covoits))
-            segments.append(utils.interpolate_segments(directions["points"]))
+            if len(driver.passenger_names) < driver.capacity - 1:
+                directions = self.api_michelin.directions(driver.waypoints(self.covoits))
+                segments.append(utils.interpolate_segments(directions["points"]))
 
         train_users = {covoit_name: covoit for covoit_name, covoit in self.covoits.items() if isinstance(covoit, TrainUser)}
 
