@@ -35,7 +35,7 @@ class CovoitCalculator():
             
         return self.last_matrix
     
-    def get_solution(self, max_compute_time = 600):
+    def get_solution(self, max_compute_time = 90):
         names_ids, ids_names, matrix_for_ortools = self.get_matrix_from_key()
         data = {
             "distance_matrix": matrix_for_ortools,
