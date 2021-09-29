@@ -1,7 +1,8 @@
-import api_car, json, os
-from datastores import Covoit
+import api_car, api_sncf, json, os
+from datastores import Covoit, TrainUser
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
+import utils
 
 class CovoitCalculator():
     
@@ -9,33 +10,36 @@ class CovoitCalculator():
         self.covoits = covoits
         self.key = key
         self.max_cost = max_cost
-        
+        self._api_sncf = None        
         self.last_matrix_destinations, self.last_matrix = None, None
         
-        self.route = api_car.OpenRouteService()
-        self.destinations = {covoit_name:covoit.location for covoit_name, covoit in covoits.items()}
+        self.api_ors = api_car.OpenRouteService()
+        self.api_michelin = api_car.Michelin()
         self.destination = destination
+        self.set_destinations(self.covoits)
         self.drivers = {name: covoit for name, covoit in covoits.items() if covoit.is_driver}
 
-    @property
-    def destination(self):
-        return self.destinations["__end__"]
-    
-    @destination.setter
-    def destination(self, destination):
-        for covoit_name, covoit in self.covoits.items():
-            covoit.destination = destination
-        self.destinations["__end__"] = destination
+    def set_destinations(self, covoits):
+        self.destinations = {covoit_name: covoit.location for covoit_name, covoit in covoits.items() if covoit.location is not None}
+        self.destinations["__end__"] = self.destination
+
+        for covoit_name, covoit in covoits.items():
+            covoit.destination = self.destination
     
     @property
     def matrix(self):
         if self.last_matrix_destinations != self.destinations:
-            self.last_matrix = self.route.matrix(self.destinations)
+            self.last_matrix = self.api_ors.matrix(self.destinations)
             self.last_matrix_destinations = dict(self.destinations)
             
         return self.last_matrix
     
-    def get_solution(self, max_compute_time = 90):
+    def get_solution(self, ignore_trains = False, max_compute_time = 90):
+        if not ignore_trains:
+            self.set_destinations(self.covoits)
+        else:
+            self.set_destinations({covoit_name: covoit for covoit_name, covoit in self.covoits.items() if not isinstance(covoit, TrainUser)})
+        
         names_ids, ids_names, matrix_for_ortools = self.get_matrix_from_key()
         data = {
             "distance_matrix": matrix_for_ortools,
@@ -86,6 +90,12 @@ class CovoitCalculator():
             
         return self.covoits
     
+    @property
+    def api_sncf(self):
+        if self._api_sncf is None:
+            self._api_sncf = api_sncf.TrainStations()
+        return self._api_sncf
+
     def get_matrix_from_key(self):
         source = self.matrix
         name_list = list(source.keys())
@@ -104,3 +114,19 @@ class CovoitCalculator():
                     matrix[i][j] = int(source[names_ids[i]][names_ids[j]][self.key])
         
         return names_ids, ids_names, matrix
+
+    def set_train_stations(self):
+        self.get_solution(ignore_trains = True)
+        segments = list()
+
+        for driver_name, driver in self.drivers.items():
+            directions = self.api_michelin.directions(driver.waypoints(self.covoits))
+            segments.append(utils.interpolate_segments(directions["points"]))
+
+        train_users = {covoit_name: covoit for covoit_name, covoit in self.covoits.items() if isinstance(covoit, TrainUser)}
+
+        for train_user_name, train_user in train_users.items():
+            stations = self.api_sncf.get_connected_stations_from_radius(train_user.departure_location, train_user.station_radius)
+            train_user.train_station = api_sncf.get_closest_station_to_segment(train_user.departure_location, stations, segments)
+
+        return self.covoits
