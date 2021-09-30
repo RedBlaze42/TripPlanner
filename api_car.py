@@ -105,7 +105,7 @@ class OpenRouteService():
         req = self.session.post(url, json ={"locations":destinations_list,"metrics":["distance","duration"]})
         
         req.raise_for_status()
-        #print(req.content)
+        
         raw_data = req.json()
         
         matrix_data = dict()
