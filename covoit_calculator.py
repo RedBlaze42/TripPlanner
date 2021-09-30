@@ -17,7 +17,10 @@ class CovoitCalculator():
         self.api_michelin = api_car.Michelin()
         self.destination = destination
         self.set_destinations(self.covoits)
-        self.drivers = {name: covoit for name, covoit in covoits.items() if covoit.is_driver}
+
+    @property
+    def drivers(self):
+        return {name: covoit for name, covoit in self.covoits.items() if covoit.is_driver}
 
     def set_destinations(self, covoits):
         self.destinations = {covoit_name: covoit.location for covoit_name, covoit in covoits.items() if covoit.location is not None}
