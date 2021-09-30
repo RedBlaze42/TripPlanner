@@ -51,7 +51,7 @@ class CovoitCalculator():
                         self.last_matrix[key_row].pop(key_column)
         
         self.last_matrix_destinations = self.destinations
-    
+
     def get_solution(self, ignore_trains = False, max_compute_time = 90):
         if not ignore_trains:
             self.set_destinations(self.covoits)
@@ -135,12 +135,9 @@ class CovoitCalculator():
 
     def set_train_stations(self):
         self.get_solution(ignore_trains = True)
-        segments = list()
 
-        for driver_name, driver in self.drivers.items():
-            if len(driver.passenger_names) < driver.capacity - 1:
-                directions = self.api_michelin.directions(driver.waypoints(self.covoits))
-                segments.append(utils.interpolate_segments(directions["points"]))
+        route_list = [driver.waypoints(self.covoits) for driver in self.drivers.values() if len(driver.passenger_names) < driver.capacity - 1]
+        segments = self.api_michelin.directions_points_multithreaded(route_list)
 
         train_users = {covoit_name: covoit for covoit_name, covoit in self.covoits.items() if isinstance(covoit, TrainUser)}
 

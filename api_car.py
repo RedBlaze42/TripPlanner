@@ -1,5 +1,5 @@
-import requests, json, time, polyline, ratelimit
-from utils import distance_km
+import requests, json, polyline, ratelimit, threading
+from utils import distance_km, interpolate_segments
 
 def extract_michelin_points(points, data):
     white_list = ["C", "V", "P", "lim", "eTrafic"]
@@ -87,6 +87,17 @@ class Michelin():
 
         return output
 
+    def directions_points_multithreaded(self, route_list):
+        output = [None]*len(route_list)
+
+        def thread_directions(waypoints, output, i):
+            output[i] = interpolate_segments(self.directions(waypoints)["points"])
+
+        threads = [threading.Thread(target=thread_directions, args=(waypoints, output, i)) for i, waypoints in enumerate(route_list)]
+        [thread.start() for thread in threads]
+        [thread.join() for thread in threads]
+
+        return output
 
 class OpenRouteService():
     
