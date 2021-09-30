@@ -36,6 +36,21 @@ class CovoitCalculator():
             self.last_matrix_destinations = dict(self.destinations)
             
         return self.last_matrix
+
+    def crop_last_matrix(self, remove_names):
+        if self.last_matrix is None: self.matrix
+
+        self.set_destinations({covoit_name: covoit for covoit_name, covoit in self.covoits.items() if not covoit_name in remove_names})
+
+        for key_row, row in list(self.last_matrix.items()):
+            if key_row in remove_names:
+                self.last_matrix.pop(key_row)
+            else:
+                for key_column, column in list(row.items()):
+                    if key_column in remove_names:
+                        self.last_matrix[key_row].pop(key_column)
+        
+        self.last_matrix_destinations = self.destinations
     
     def get_solution(self, ignore_trains = False, max_compute_time = 90):
         if not ignore_trains:
@@ -138,3 +153,25 @@ class CovoitCalculator():
     def set_routes(self):
         for driver_name, driver in self.drivers.items():
             self.api_ors.set_driver_route(driver, self.covoits)
+
+    def get_fartest_passengers(self, limit = 0.3):
+        output = list()
+        for driver_name, driver in self.drivers.items():
+            total_trip_time = driver.calculate_trip(self.matrix)
+
+            for passenger in driver.passenger_names:
+                detour = driver.calculate_detour(self.matrix, passenger_name = passenger)
+                if detour/total_trip_time > limit:
+                    output.append(passenger)
+
+        return output
+
+    def convert_fartest_passengers_to_trains(self, limit = 0.3):
+        fartest_passengers = self.get_fartest_passengers(limit = limit)
+
+        for passenger in fartest_passengers:
+            self.covoits[passenger] = TrainUser.from_covoit(self.covoits[passenger])
+
+        self.crop_last_matrix(fartest_passengers)
+        self.set_train_stations()
+        return self.covoits

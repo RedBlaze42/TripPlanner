@@ -88,3 +88,7 @@ class TrainUser(Covoit):
         if train_station is None: return
         self._train_station = train_station
         self.location = train_station["location"]
+
+    @classmethod
+    def from_covoit(cls, covoit):
+        return cls(covoit.name, covoit.location, covoit.destination)
