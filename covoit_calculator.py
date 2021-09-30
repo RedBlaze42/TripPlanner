@@ -131,3 +131,7 @@ class CovoitCalculator():
             train_user.train_station = api_sncf.get_closest_station_to_segment(train_user.departure_location, stations, segments)
 
         return self.covoits
+
+    def set_routes(self):
+        for driver_name, driver in self.drivers.items():
+            self.api_ors.set_driver_route(driver, self.covoits)
