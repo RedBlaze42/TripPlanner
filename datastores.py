@@ -40,7 +40,7 @@ class Covoit():
             
         return trip_sum
 
-    def calculat_detour(self, matrix, passenger_name = None, key = "duration"):
+    def calculate_detour(self, matrix, passenger_name = None, key = "duration"):
         if not self.is_driver: return None
         
         if passenger_name is None:
