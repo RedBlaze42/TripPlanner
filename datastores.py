@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+from utils import distance_km
 
+vitesse_train = 100
 
 class Covoit():
     
@@ -58,7 +60,10 @@ class Covoit():
         self.trip_time = self.calculate_trip(matrix)
 
         for i, passenger_name in enumerate(self.passenger_names):
-            covoits[passenger_name].trip_time = self.calculate_trip(matrix, self.passenger_names[i:], start_step = passenger_name)
+            passenger = covoits[passenger_name]
+            passenger.trip_time = self.calculate_trip(matrix, self.passenger_names[i:], start_step = passenger_name)
+            if isinstance(passenger, TrainUser):
+                passenger.trip_time += (distance_km(passenger.departure_location, passenger.location) / vitesse_train) * 3600
 
     def set_trip_costs(self, matrix, covoits, total_cost):
         if not self.is_driver: return None
