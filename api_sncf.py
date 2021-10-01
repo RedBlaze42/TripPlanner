@@ -57,7 +57,7 @@ class TrainStations():
                 "affluence": affluence_data[uic] if uic in affluence_data.keys() else 0,
                 "uic_code": uic
             }
-            self.stations[gare_dict["uic_code"]] = gare_dict
+            self.stations[str(gare_dict["uic_code"])] = gare_dict
 
         with open("sncf_gares.json", "w", encoding="utf-8") as f:
             json.dump(self.stations, f)
