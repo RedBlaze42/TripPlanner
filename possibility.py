@@ -24,7 +24,7 @@ class Possibility():
         if not self._solution_set:
             self.set_solution()
             self._solution_set = True
-        
+
         return self._solution_set
 
     def set_solution(self):
@@ -32,3 +32,20 @@ class Possibility():
         self.covoit_calculator.convert_fartest_passengers_to_trains()
         self.covoit_calculator.get_solution()
         self.covoit_calculator.set_routes()
+        self._solution_set = True
+
+    @property
+    def total_trip_time(self):
+        total_trip_time = 0
+        if self.solution_set:
+            for covoit in self.covoits.values():
+                total_trip_time += covoit.trip_time
+        return total_trip_time
+
+    @property    
+    def total_trip_cost(self):
+        total_trip_cost = 0
+        if self.solution_set:
+            for covoit in self.covoits.values():
+                total_trip_cost += covoit.trip_cost
+        return total_trip_cost
