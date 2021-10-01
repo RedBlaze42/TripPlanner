@@ -209,11 +209,3 @@ class Gite():
                     output += "{}: {} ".format(key, value)
         
         return output
-
-
-if __name__ == "__main__":
-    gites = GitesDeFrance(Regions.BOURGOGNE_FRANCHE_COMTE, datetime.now() + timedelta(days = 31), datetime.now() + timedelta(days = 31 + 7), 16)
-    print(gites.nb_results)
-    for gite in gites:
-        print(gite)
-    print(gites.last_url)
