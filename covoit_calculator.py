@@ -136,7 +136,8 @@ class CovoitCalculator():
         self.get_solution(ignore_trains = True)
 
         route_list = [driver.waypoints(self.covoits) for driver in self.drivers.values() if len(driver.passenger_names) < driver.capacity - 1]
-        segments = self.api_michelin.directions_points_multithreaded(route_list)
+        directions = self.api_michelin.directions_multithreaded(route_list)
+        segments = [segment["points"] for segment in directions]
 
         train_users = {covoit_name: covoit for covoit_name, covoit in self.covoits.items() if isinstance(covoit, TrainUser)}
 

@@ -87,11 +87,11 @@ class Michelin():
 
         return output
 
-    def directions_points_multithreaded(self, route_list):
+    def directions_multithreaded(self, route_list):
         output = [None]*len(route_list)
 
         def thread_directions(waypoints, output, i):
-            output[i] = interpolate_segments(self.directions(waypoints)["points"])
+            output[i] = self.directions(waypoints)
 
         threads = [threading.Thread(target=thread_directions, args=(waypoints, output, i)) for i, waypoints in enumerate(route_list)]
         [thread.start() for thread in threads]
