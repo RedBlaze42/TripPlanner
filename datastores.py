@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 
 
 class Covoit():
@@ -92,3 +93,14 @@ class TrainUser(Covoit):
     @classmethod
     def from_covoit(cls, covoit):
         return cls(covoit.name, covoit.location, covoit.destination)
+
+@dataclass
+class Participant():
+    name: str
+    is_driver: bool
+    capacity: int
+    location: list
+    budget: float
+
+    def get_covoit(self, destination):
+        return Covoit(self.name, self.location, self.is_driver, destination, capacity = self.capacity)
