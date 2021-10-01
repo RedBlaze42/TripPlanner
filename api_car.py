@@ -195,7 +195,7 @@ class OpenRouteService():
             "name": "{}{}{}".format(
                 properties["county"]+", " if "county" in properties.keys() else properties["name"]+", " if "name" in properties.keys() else "",
                 properties["region"]+", " if "region" in properties.keys() else "",
-                properties["country"]+", " if "country" in properties.keys() else ""
+                properties["country"] if "country" in properties.keys() else ""
             )
         }
         
