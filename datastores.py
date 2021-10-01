@@ -70,6 +70,15 @@ class Covoit():
         for passenger_name in self.passenger_names:
                 covoits[passenger_name].trip_cost = (matrix[passenger_name]["__end__"]["distance"] / total_distance) * total_cost
 
+    def __str__(self):
+        output = str()
+        for key, value in self.__dict__.items():
+            if isinstance(value, str) or isinstance(value, int) or isinstance(value, float) and key[0] != "_":
+                if not isinstance(value, str) or len(value) < 100:
+                    output += "{}: {} ".format(key, value)
+        
+        return output
+
 class TrainUser(Covoit):
     def __init__(self, name, departure_location, destination, train_station = None, station_radius = 20):
         self.departure_location = departure_location
