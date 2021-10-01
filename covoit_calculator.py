@@ -148,8 +148,13 @@ class CovoitCalculator():
         return self.covoits
 
     def set_routes(self):
-        for driver_name, driver in self.drivers.items():
+        for driver in self.drivers.values():
             self.api_ors.set_driver_route(driver, self.covoits)
+
+        directions = self.api_michelin.directions_multithreaded([driver.waypoints(self.covoits) for driver in self.drivers.values()])
+        for i, driver in enumerate(self.drivers.values()):
+            driver.set_trip_times(self.matrix, self.covoits)
+            driver.set_trip_costs(self.matrix, self.covoits, directions[i]["total_cost"])
 
     def get_fartest_passengers(self, limit = 0.3):
         output = list()
