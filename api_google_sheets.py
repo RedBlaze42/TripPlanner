@@ -1,5 +1,6 @@
 import gspread, json
 import api_car
+from datastores import Participant
 
 def make_list_to_len(input_list, output_len):
     while len(input_list) < output_len:
@@ -49,3 +50,10 @@ class TripPlanningSheet():
 
         self.sheet_participants.batch_update([{"range": self.ranges["departure_cities"], "values": departure_cities}])
         self.sheet_calculs.batch_update([{"range": self.ranges["cities_cache"], "values": cities_cache}, {"range": self.ranges["cities_coords"], "values": cities_coords}])
+
+    def get_participants(self):
+        participant_array = self.sheet_participants.batch_get([self.ranges["participant_array"]], major_dimension = "ROWS", value_render_option = "FORMULA")
+        coords_list = self.sheet_calculs.batch_get([self.ranges["cities_coords"]])[0]
+        coords_list = [json.loads(coords[0]) for coords in coords_list]
+        
+        return [Participant(participant[0], participant[1], participant[2], coords_list[i], participant[5]) for i, participant in enumerate(participant_array[0]) if participant[0]!=""]
