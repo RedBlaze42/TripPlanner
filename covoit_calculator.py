@@ -1,8 +1,7 @@
-import api_car, api_sncf, json, os
-from datastores import Covoit, TrainUser
+import api_car, api_sncf
+from datastores import TrainUser
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
-import utils
 
 class CovoitCalculator():
     
