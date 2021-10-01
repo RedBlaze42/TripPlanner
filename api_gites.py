@@ -62,7 +62,11 @@ class GitesDeFrance():
             if self.n > len(self.results) - 1:
                 page = (self.n + 1) // RESULTS_PER_PAGES
                 self.results += self.get_result_page(page = page)
-            return self.results[self.n]
+            try:
+                return self.results[self.n]
+            except IndexError:
+                self._nb_results = self.n
+                raise StopIteration
         else:
             raise StopIteration
 
