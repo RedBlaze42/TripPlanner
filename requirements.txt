@@ -4,6 +4,6 @@ ortools
 beautifulsoup4
 tqdm
 pysftp
-gspread
+gspread>=4.0.1
 ratelimit
 numpy
