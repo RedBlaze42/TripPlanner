@@ -5,10 +5,9 @@ from ortools.constraint_solver import pywrapcp
 
 class CovoitCalculator():
     
-    def __init__(self, covoits, destination, key = "duration", max_cost = 10*3600):
+    def __init__(self, covoits, destination, key = "duration"):
         self.covoits = covoits
         self.key = key
-        self.max_cost = max_cost
         self._api_sncf = None        
         self.last_matrix_destinations, self.last_matrix = None, None
         
@@ -78,7 +77,7 @@ class CovoitCalculator():
         routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
         cost_dimension_name = "Cost"
-        routing.AddDimension(transit_callback_index, 0, self.max_cost, True, cost_dimension_name)
+        routing.AddDimension(transit_callback_index, 0, 35*3600, True, cost_dimension_name)
         cost_dimension = routing.GetDimensionOrDie(cost_dimension_name)
         cost_dimension.SetGlobalSpanCostCoefficient(100)
 
