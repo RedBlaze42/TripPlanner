@@ -136,3 +136,6 @@ def get_closest_station_to_segment(from_station, stations, segments, driver_coef
 
 
     return min_station[1]
+
+if __name__ == '__main__':
+    TrainStations() #Build cache
