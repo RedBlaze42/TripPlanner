@@ -93,7 +93,7 @@ class CovoitCalculator():
         search_parameters.time_limit.seconds = max_compute_time
 
         solution = routing.SolveWithParameters(search_parameters)
-            
+        if solution is None: raise LookupError
         for vehicle_id in range(data['num_vehicles']):
             index = routing.Start(vehicle_id)
             driver = self.covoits[names_ids[manager.IndexToNode(index)]]
