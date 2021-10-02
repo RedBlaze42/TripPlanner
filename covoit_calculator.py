@@ -22,7 +22,7 @@ class CovoitCalculator():
 
     def set_destinations(self, covoits):
         self.destinations = {covoit_name: covoit.location for covoit_name, covoit in covoits.items() if covoit.location is not None}
-        self.destinations["__end__"] = self.destination
+        self.destinations["_end"] = self.destination
 
         for covoit_name, covoit in covoits.items():
             covoit.destination = self.destination
@@ -61,7 +61,7 @@ class CovoitCalculator():
             "distance_matrix": matrix_for_ortools,
             "num_vehicles":len(self.drivers),
             "starts": [ids_names[driver_name] for driver_name, driver in self.drivers.items()],
-            "ends": [ids_names["__end__"] for _ in range(len(self.drivers))],
+            "ends": [ids_names["_end"] for _ in range(len(self.drivers))],
             "vehicle_capacities": [driver.capacity for driver_name, driver in self.drivers.items()],
             "demands": [1 if i < len(self.matrix)-1 else 0 for i in range(len(self.matrix))]
         }
@@ -100,7 +100,7 @@ class CovoitCalculator():
             driver.passenger_names = list()
             while not routing.IsEnd(index):
                 index = solution.Value(routing.NextVar(index))
-                if names_ids[manager.IndexToNode(index)] == "__end__":
+                if names_ids[manager.IndexToNode(index)] == "_end":
                     break
                 driver.passenger_names.append(names_ids[manager.IndexToNode(index)])
             
@@ -115,7 +115,7 @@ class CovoitCalculator():
     def get_matrix_from_key(self):
         source = self.matrix
         name_list = list(source.keys())
-        name_list += [name_list.pop(name_list.index("__end__"))]
+        name_list += [name_list.pop(name_list.index("_end"))]
         
         names_ids = {i: name for i, name in enumerate(name_list)}
         ids_names = {name: i for i, name in enumerate(name_list)}

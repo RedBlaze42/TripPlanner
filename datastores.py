@@ -38,8 +38,8 @@ class Covoit():
             trip_sum += matrix[previous_step][passenger][key]
             previous_step = passenger
             
-        if "__end__" in matrix.keys():
-            trip_sum += matrix[previous_step]["__end__"][key]
+        if "_end" in matrix.keys():
+            trip_sum += matrix[previous_step]["_end"][key]
             
         return trip_sum
 
@@ -71,12 +71,12 @@ class Covoit():
     def set_trip_costs(self, matrix, covoits, total_cost):
         if not self.is_driver: return None
 
-        total_distance = sum([matrix[passenger_name]["__end__"]["distance"] for passenger_name in self.passenger_names])
-        total_distance += matrix[self.name]["__end__"]["distance"]
+        total_distance = sum([matrix[passenger_name]["_end"]["distance"] for passenger_name in self.passenger_names])
+        total_distance += matrix[self.name]["_end"]["distance"]
         
-        self.trip_cost = (matrix[self.name]["__end__"]["distance"] / total_distance) * total_cost
+        self.trip_cost = (matrix[self.name]["_end"]["distance"] / total_distance) * total_cost
         for passenger_name in self.passenger_names:
-                covoits[passenger_name].trip_cost = (matrix[passenger_name]["__end__"]["distance"] / total_distance) * total_cost
+                covoits[passenger_name].trip_cost = (matrix[passenger_name]["_end"]["distance"] / total_distance) * total_cost
 
     def __str__(self):
         output = str()
