@@ -104,7 +104,7 @@ def map_gites(gites, participants_dict = None):
         gite_locations["lat"].append(gite.location[0])
         gite_locations["lon"].append(gite.location[1])
         gite_locations["link"].append(gite.link)
-        gite_locations["text"].append("{} Chambres<br>{} Personnes\n{}€".format(gite.chambres, gite.personnes, gite.price))
+        gite_locations["text"].append("{} Chambres<br>{} Personnes\n{}€".format(gite.bedrooms, gite.beds, gite.price))
         
     data = [
         go.Scattermapbox(
