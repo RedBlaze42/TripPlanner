@@ -2,9 +2,12 @@ import gspread, json
 import api_car
 from datastores import Participant
 
-def make_list_to_len(input_list, output_len):
+def make_list_to_len(input_list, output_len, with_value = None):
     while len(input_list) < output_len:
-        input_list.append([])
+        if with_value is None:
+            input_list.append([])
+        else:
+            input_list.append(with_value)
     return input_list
 
 def set_row(row, value, index = 0):
