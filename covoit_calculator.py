@@ -160,7 +160,7 @@ class CovoitCalculator():
         for driver_name, driver in self.drivers.items():
 
             for passenger in driver.passenger_names:
-                detour = driver.calculate_detour(self.matrix, passenger_name = passenger)
+                detour = driver.calculate_detour(self.matrix, passenger_name = passenger, absolute = True)
                 if detour > detour_limit:
                     output.append(passenger)
 

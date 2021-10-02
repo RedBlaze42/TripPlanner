@@ -43,16 +43,19 @@ class Covoit():
             
         return trip_sum
 
-    def calculate_detour(self, matrix, passenger_name = None, key = "duration"):
+    def calculate_detour(self, matrix, passenger_name = None, key = "duration" , absolute = False):
         if not self.is_driver: return None
         
         if passenger_name is None:
             return self.calculate_trip(matrix, key = key) - self.calculate_trip(matrix, passengers = [] , key = key)
         else:
-            temp_passengers = list(self.passenger_names)
-            temp_passengers.remove(passenger_name)
-            
-            return self.calculate_trip(matrix, key = key) - self.calculate_trip(matrix, passengers = temp_passengers)
+            if absolute:
+                return self.calculate_trip(matrix, passengers = [passenger_name], key = key) - self.calculate_trip(matrix, passengers = [])
+            else:
+                temp_passengers = list(self.passenger_names)
+                temp_passengers.remove(passenger_name)
+                
+                return self.calculate_trip(matrix, key = key) - self.calculate_trip(matrix, passengers = temp_passengers)
 
     def set_trip_times(self, matrix, covoits):
         if not self.is_driver: return None
