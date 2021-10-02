@@ -83,6 +83,11 @@ def format_seconds(seconds, show_seconds=False):
     
     return output
 
+def nocache(self, link):
+    link += "?" if not "?" in link else "&"
+    link += "nocache={:.0f}".format(time.time())
+    return link
+
 class GeoCoder():
     
     def __init__(self):
@@ -127,7 +132,7 @@ class SftpClient():
             with client.cd(self.remote_path):
                 client.put(filename)
         
-        return "http://" + "/".join([dirname for dirname in self.access_info["host"].split("/") + self.access_info["path"].split("/") + filename.split("/") if dirname != ""])
+        return nocache("http://" + "/".join([dirname for dirname in self.access_info["host"].split("/") + self.access_info["path"].split("/") + filename.split("/") if dirname != ""]))
 
     def list_dir(self):
         with self.client as client:
