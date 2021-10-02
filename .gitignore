@@ -3,5 +3,7 @@ __pycache__
 test*.py
 *.txt
 *.pickle
+*.png
+*.html
 
 !requirements.txt
