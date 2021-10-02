@@ -115,7 +115,7 @@ class TrainStations():
             output += self.get_connected_station(station)
         return output
 
-def get_closest_station_to_segment(from_station, stations, segments, driver_coeff = 3, train_coeff = 1.5):
+def get_closest_station_to_segment(from_station, stations, segments, driver_coeff = 6, train_coeff = 2):
     min_station = (-1, None)
 
     destination = segments[0][-1]
