@@ -6,6 +6,10 @@ class Possibility():
         self.gite = gite
         self._covoits, self._covoit_calculator = None, None
         self._solution_set = False
+        
+        self.rejected = False
+        self.sheet_id = -1
+        self.number = 0
 
     @property
     def covoits(self):
