@@ -49,3 +49,7 @@ class Possibility():
             for covoit in self.covoits.values():
                 total_trip_cost += covoit.trip_cost
         return total_trip_cost
+
+    @property
+    def total_cost(self):
+        return self.total_trip_cost + self.gite.price
