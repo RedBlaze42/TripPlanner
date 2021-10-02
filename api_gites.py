@@ -176,7 +176,7 @@ class Gite():
         self.soup = str(soup)
         self.link = BASE_URL + soup.find_all("a")[2]["href"]
         self.id = re.findall(r"-([a-z0-9]+)(?:\?|$)", self.link)[0]
-        self.image = [BASE_URL + image["data-src"] if "data-src" in image.attrs.keys() else BASE_URL + image["src"] for image in soup.find_all("img")]
+        self.images = [BASE_URL + image["data-src"] if "data-src" in image.attrs.keys() else BASE_URL + image["src"] for image in soup.find_all("img")]
         self.title = soup.find("h2").text.strip()
         self.epis = len(soup.select(".g2f-levelEpis")[0].find_all("li")) if len(soup.select(".g2f-levelEpis")) > 0 else None
         self.location_name = soup.select(".g2f-accommodationTile-text-place")[0].text[2:]
