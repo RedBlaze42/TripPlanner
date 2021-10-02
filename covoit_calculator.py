@@ -155,20 +155,19 @@ class CovoitCalculator():
             driver.set_trip_times(self.matrix, self.covoits)
             driver.set_trip_costs(self.matrix, self.covoits, directions[i]["total_cost"])
 
-    def get_fartest_passengers(self, limit = 0.3):
+    def get_fartest_passengers(self, detour_limit = 2*3600):
         output = list()
         for driver_name, driver in self.drivers.items():
-            total_trip_time = driver.calculate_trip(self.matrix)
 
             for passenger in driver.passenger_names:
                 detour = driver.calculate_detour(self.matrix, passenger_name = passenger)
-                if detour/total_trip_time > limit:
+                if detour > detour_limit:
                     output.append(passenger)
 
         return output
 
-    def convert_fartest_passengers_to_trains(self, limit = 0.3):
-        fartest_passengers = self.get_fartest_passengers(limit = limit)
+    def convert_fartest_passengers_to_trains(self, detour_limit = 2*3600):
+        fartest_passengers = self.get_fartest_passengers(detour_limit = detour_limit)
 
         for passenger in fartest_passengers:
             self.covoits[passenger] = TrainUser.from_covoit(self.covoits[passenger])
