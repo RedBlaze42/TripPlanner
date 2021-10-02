@@ -120,7 +120,7 @@ class SftpClient():
         
     @property
     def client(self):
-        return pysftp.Connection(self.access_info["host"], username = self.access_info["username"], password = self.access_info["password"], port = 1560, cnopts = self.cnopts)
+        return pysftp.Connection(self.access_info["host"], username = self.access_info["username"], password = self.access_info["password"], port = self.access_info["port"], cnopts = self.cnopts)
 
     def upload_file(self, filename):
         with self.client as client:
