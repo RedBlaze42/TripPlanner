@@ -14,7 +14,7 @@ if os.path.exists("config.json"):
         if "mapbox_key" in data.keys():
             mapbox_key = data["mapbox_key"]
 
-colors =  ["lime", "aqua", "yellow", "fuchsia", "darkorange", "purple", "tomato", "peru"]
+colors =  ["lime", "aqua", "yellow", "fuchsia", "darkorange", "purple", "tomato", "peru", "goldenrod", "crimson", "darkslategrey", "greenyellow"]
 
 default_mapbox_layout = go.Layout(
     hovermode = 'closest',
