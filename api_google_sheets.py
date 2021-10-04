@@ -1,5 +1,6 @@
 import gspread, json, time
 import api_car, utils, graphs
+from api_gites import Filters
 from datastores import Participant
 from datetime import datetime
 from math import ceil
@@ -73,6 +74,11 @@ class TripPlanningSheet():
         coords_list = [json.loads(coords[0]) for coords in coords_list if len(coords) > 0]
         
         return [Participant(participant[0], participant[1], participant[2]+1, coords_list[i], participant[5]) for i, participant in enumerate(participant_array) if len(participant)>0 and participant[0]!=""]
+
+    def get_filters(self):
+        raw_filters = self.sheet_participants.batch_get([self.ranges["filters"]], major_dimension = "COLUMNS", value_render_option = "FORMULA")[0][0]
+        filters = [Filters[self.config["google_sheet"]["filters"][i]] for i, value in enumerate(raw_filters) if isinstance(value, bool) and value]
+        return {"filters": filters, "max_beds_in_bedroom": raw_filters[9]}
     
     def get_dates(self):
         date_range = self.sheet_participants.batch_get([self.ranges["dates"]])[0]
