@@ -16,12 +16,12 @@ class Filters(Enum):
     GITE_DE_GROUPE = "type:36171"
     GITE = "type:36172"
     ANIMALS = "facet_animals:72241"
-    PISCINE = "amenities_ext:35881"
-    LAVE_VAISSELLE = "shared_interior_amenities:35925"
-    LAVE_LINGE = "shared_interior_amenities:35935"
+    POOL = "amenities_ext:35881"
+    DISHWASHER = "shared_interior_amenities:35925"
+    LAUNDRY = "shared_interior_amenities:35935"
     WIFI = "facet_accommodation_services:36219",
-    MER = "thematics:36151",
-    MONTAGNE = "thematics:36153"
+    SEA = "thematics:36151",
+    MOUNTAIN = "thematics:36153"
 
 class Regions(Enum):
     ILE_DE_FRANCE = (6, "Île-de-France")
