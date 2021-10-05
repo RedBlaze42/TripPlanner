@@ -135,6 +135,10 @@ class TripPlanningSheet():
         return output
     
     def print_result(self, possibility):
+        if possibility.sheet_id is None:
+            result_sheet = self.file.duplicate_sheet(self.sheet_result_model.id, insert_sheet_index = len(self.file.worksheets()), new_sheet_name = "Gîte {}".format(possibility.number))
+            possibility.sheet_id = result_sheet.id
+
         header = {"range":self.ranges["result_header"],"major_dimension":"COLUMNS","values":[[
             possibility.number,
             possibility.gite.title,

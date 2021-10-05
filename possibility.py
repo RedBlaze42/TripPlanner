@@ -8,7 +8,7 @@ class Possibility():
         self._solution_set = False
         
         self.rejected = False
-        self.sheet_id = -1
+        self.sheet_id = None
         self.number = 0
 
     @property
