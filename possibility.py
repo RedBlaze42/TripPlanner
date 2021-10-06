@@ -35,7 +35,6 @@ class Possibility():
         self.covoit_calculator.get_solution()
         self.covoit_calculator.convert_fartest_passengers_to_trains()
         self.covoit_calculator.get_solution()
-        self.covoit_calculator.set_routes()
         self._solution_set = True
 
     @property
