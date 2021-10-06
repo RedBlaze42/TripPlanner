@@ -15,8 +15,9 @@ class TripPlanner():
         self.filtered_gites = None
 
         self.participants_last_loaded = 0
-        self.refresh_participants()
         self.sheet = TripPlanningSheet(config_path = config_path)
+        self.refresh_participants()
+        self.refresh_possibilities()
 
     def refresh_participants(self):
         self.participants_last_loaded = 0
@@ -48,7 +49,7 @@ class TripPlanner():
         
         return self.filtered_gites
 
-    def get_possibilities(self):
+    def refresh_possibilities(self):
         self.refresh_participants()
         self.possibilities = [Possibility(self.participants, gite) for gite in self.gites]
 
