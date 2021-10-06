@@ -78,7 +78,11 @@ class TripPlanningSheet():
     def get_filters(self):
         raw_filters = self.sheet_participants.batch_get([self.ranges["filters"]], major_dimension = "COLUMNS", value_render_option = "FORMULA")[0][0]
         filters = [Filters[self.config["google_sheet"]["filters"][i]] for i, value in enumerate(raw_filters) if isinstance(value, bool) and value]
-        return {"filters": filters, "max_beds_in_bedroom": raw_filters[9]}
+        output = {
+            "filters": filters,
+            "max_beds_in_bedroom": raw_filters[9] if len(raw_filters) >= 10 else None
+        }
+        return output
     
     def get_dates(self):
         date_range = self.sheet_participants.batch_get([self.ranges["dates"]])[0]
