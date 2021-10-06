@@ -30,6 +30,10 @@ class TripPlanner():
         
         return self._participants
 
+    @property
+    def nb_participants(self):
+        return len(self.participants)
+
     def fetch_cache(self):
         api_sncf.TrainStations()
         utils.GeoCoder()
