@@ -44,6 +44,9 @@ class GitesDeFrance():
         self.checkin = datetime.strftime(checkin, "%Y-%m-%d") if isinstance(checkin, datetime) else checkin
         self.checkout = datetime.strftime(checkout, "%Y-%m-%d") if isinstance(checkout, datetime) else checkout
         
+        self.checkin_datetime = datetime.strptime(self.checkin, "%Y-%m-%d")
+        self.checkout_datetime = datetime.strptime(self.checkout, "%Y-%m-%d")
+
         self.filters = filters if isinstance(filters, list) else [filters]
         self.region = region
         self.travelers = travelers
