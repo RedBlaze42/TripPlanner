@@ -6,6 +6,7 @@ class Possibility():
         self.gite = gite
         self._covoits, self._covoit_calculator = None, None
         self._solution_set = False
+        self._route_set = False
         
         self.rejected = False
         self.sheet_id = None
@@ -22,35 +23,43 @@ class Possibility():
         if self._covoit_calculator is None:
             self._covoit_calculator = CovoitCalculator(self.covoits, self.gite.location)
         return self._covoit_calculator
-    
-    @property
-    def solution_set(self):
+
+    def set_solution(self, with_trains = True):
         if not self._solution_set:
-            self.set_solution()
+            if with_trains:
+                self.covoit_calculator.get_solution()
+                self.covoit_calculator.convert_fartest_passengers_to_trains()
+            self.covoit_calculator.get_solution()
             self._solution_set = True
 
-        return self._solution_set
+    def refresh_solution(self):
+        self._solution_set = False
+        self.set_solution()
 
-    def set_solution(self):
-        self.covoit_calculator.get_solution()
-        self.covoit_calculator.convert_fartest_passengers_to_trains()
-        self.covoit_calculator.get_solution()
-        self._solution_set = True
+    def set_routes(self):
+        if not self._route_set:    
+            self.set_solution()
+            self.covoit_calculator.set_routes()
+            self._route_set = True
+
+    def refresh_routes(self):
+        self._route_set = False
+        self.set_routes()
 
     @property
     def total_trip_time(self):
         total_trip_time = 0
-        if self.solution_set:
-            for covoit in self.covoits.values():
-                total_trip_time += covoit.trip_time
+        self.set_solution()
+        for covoit in self.covoits.values():
+            total_trip_time += covoit.trip_time
         return total_trip_time
 
     @property    
     def total_trip_cost(self):
         total_trip_cost = 0
-        if self.solution_set:
-            for covoit in self.covoits.values():
-                total_trip_cost += covoit.trip_cost
+        self.set_routes()
+        for covoit in self.covoits.values():
+            total_trip_cost += covoit.trip_cost
         return total_trip_cost
 
     @property
