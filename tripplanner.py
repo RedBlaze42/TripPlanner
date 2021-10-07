@@ -10,7 +10,7 @@ class TripPlanner():
         with open(config_path, "r") as f:
             self.config = json.load(f)
 
-        self.possibilities = list()
+        self.possibilities = None
         self.gites = None
         self.filtered_gites = None
 
@@ -54,12 +54,31 @@ class TripPlanner():
         
         return self.filtered_gites
 
-    def refresh_possibilities(self):
+    def refresh_possibilities(self): #TODO Refresh only on changes
         self.refresh_participants()
-        self.possibilities = [Possibility(self.participants, gite) for gite in self.gites]
+        self.possibilities = [Possibility(self.participants, gite) for gite in self.get_gites()]
 
         return self.possibilities
 
     @property
     def total_budget(self):
         return sum([participant.budget for participant in self.participants])
+
+    def filter_possibilities(self, output_number = 10, price_filter_number = 50):
+        if self.possibilities is None:
+            self.refresh_possibilities()
+        possibilities = list(filter(lambda p: p.sheet_id is None and not p.rejected, self.possibilities))
+        if len(possibilities) == 0: return None
+
+        price_filtered = sorted(possibilities, key = lambda p: p.gite.price)[:price_filter_number]
+        distance_filtered = sorted(price_filtered, key = lambda p: p.total_trip_time)[:output_number]
+        next_index = max([p.number for p in self.possibilities if p.sheet_id is not None]) + 1 if len([1 for p in self.possibilities if p.sheet_id is not None]) > 0 else 1
+        
+        for possibility in distance_filtered:
+            possibility.number = next_index
+            next_index += 1
+
+        return distance_filtered
+
+    def refresh_results(self, restults_number = 10):
+        raise NotImplementedError
