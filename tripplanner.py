@@ -16,8 +16,6 @@ class TripPlanner():
 
         self.participants_last_loaded = 0
         self.sheet = TripPlanningSheet(config_path = config_path)
-        self.refresh_participants()
-        self.refresh_possibilities()
 
     def refresh_participants(self):
         self.participants_last_loaded = 0
@@ -27,6 +25,7 @@ class TripPlanner():
     def participants(self):
         if time.time() - self.participants_last_loaded > 120:
             self._participants = self.sheet.get_participants()
+            self.participants_last_loaded = time.time()
         
         return self._participants
 
