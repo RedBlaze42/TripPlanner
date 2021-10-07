@@ -115,6 +115,10 @@ class TripPlanningSheet():
             updates.append({"range": self.ranges["results_map"], "values": results_map_values})
             
         self.sheet_results.batch_update(updates, value_input_option = "USER_ENTERED")
+
+        for possibility in possibilities:
+            if not possibility.rejected:
+                self.print_result(possibility)
         
     def get_results_map_links(self, gites, participants):
         fig = graphs.map_gites(gites, {participant.name: participant.location for participant in participants})
