@@ -57,7 +57,7 @@ class Possibility():
     @property
     def total_trip_time(self):
         total_trip_time = 0
-        self.set_solution()
+        self.set_routes()
         for covoit in self.covoits.values():
             total_trip_time += covoit.trip_time
         return total_trip_time
