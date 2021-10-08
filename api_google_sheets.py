@@ -109,6 +109,10 @@ class TripPlanningSheet():
                 possibility.sheet_id = None
     
     def print_results(self, possibilities, nb_results):
+        for possibility in possibilities:
+            if not possibility.rejected:
+                self.print_result(possibility)
+        
         grid_range = gspread.utils.a1_range_to_grid_range(self.ranges["results"])
         column_number = grid_range["endColumnIndex"]-grid_range["startColumnIndex"]
         
@@ -135,10 +139,6 @@ class TripPlanningSheet():
             updates.append({"range": self.ranges["results_map"], "values": results_map_values})
             
         self.sheet_results.batch_update(updates, value_input_option = "USER_ENTERED")
-
-        for possibility in possibilities:
-            if not possibility.rejected:
-                self.print_result(possibility)
         
     def get_results_map_links(self, gites, participants):
         fig = graphs.map_gites(gites, {participant.name: participant.location for participant in participants})
