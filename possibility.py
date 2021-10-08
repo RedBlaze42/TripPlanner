@@ -12,6 +12,14 @@ class Possibility():
         self.sheet_id = None
         self.number = 0
 
+    def set_participants(self, participants):
+        if not sorted(participants, key=lambda x: x.name) == sorted(self.participants, key=lambda x: x.name):
+            self.participants = participants
+            self._covoits, self._covoit_calculator = None, None
+            self._solution_set = False
+            self._route_set = False       
+            print("refreshed possibility")     
+
     @property
     def covoits(self):
         if self._covoits is None:
