@@ -87,6 +87,26 @@ class TripPlanningSheet():
     def get_dates(self):
         date_range = self.sheet_participants.batch_get([self.ranges["dates"]])[0]
         return datetime.strptime(date_range[0][0], "%Y-%m-%d"), datetime.strptime(date_range[1][0], "%Y-%m-%d")
+
+    def delete_rejected(self, possibilities):
+        ranges = list()
+        keys = list()
+        for possibility in possibilities:
+            if possibility.sheet_id is not None:
+                keys.append(possibility)
+                worksheet = self.file.get_worksheet_by_id(possibility.sheet_id)
+                ranges.append(gspread.utils.absolute_range_name(worksheet.title, self.ranges["result_reject"]))
+
+        response = self.file.values_batch_get(ranges)
+        for i, line in enumerate(response.get("valueRanges", [])):
+            if "values" in line.keys() and line["values"][0][0] == "TRUE":
+                keys[i].rejected = True
+
+        for possibility in possibilities:
+            if possibility.rejected and possibility.sheet_id is not None:
+                worksheet = self.file.get_worksheet_by_id(possibility.sheet_id)
+                self.file.del_worksheet(worksheet)
+                possibility.sheet_id = None
     
     def print_results(self, possibilities, nb_results):
         grid_range = gspread.utils.a1_range_to_grid_range(self.ranges["results"])
