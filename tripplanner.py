@@ -14,12 +14,13 @@ class TripPlanner():
         self.gites = None
         self.filtered_gites = None
 
+        self.participant_cache = set()
         self.participants_last_loaded = 0
         self.sheet = TripPlanningSheet(config_path = config_path)
 
     def refresh_participants(self):
         self.participants_last_loaded = 0
-        self.participants
+        return self.participants
 
     @property
     def participants(self):
@@ -54,9 +55,13 @@ class TripPlanner():
         
         return self.filtered_gites
 
-    def refresh_possibilities(self): #TODO Refresh only on changes
-        self.refresh_participants()
-        self.possibilities = [Possibility(self.participants, gite) for gite in self.get_gites()]
+    def refresh_possibilities(self):
+        participants = self.refresh_participants()
+        if self.possibilities is None or len(self.possibilities) == 0:
+            self.possibilities = [Possibility(self.participants, gite) for gite in self.get_gites()]
+        else:
+            for possibility in self.possibilities:
+                possibility.set_participants(participants)
 
         return self.possibilities
 
@@ -67,8 +72,9 @@ class TripPlanner():
     def filter_possibilities(self, output_number = 10, price_filter_number = 50):
         if self.possibilities is None:
             self.refresh_possibilities()
-        possibilities = list(filter(lambda p: p.sheet_id is None and not p.rejected, self.possibilities))
-        if len(possibilities) == 0: return None
+        possibilities = [p for p in self.possibilities if p.sheet_id is None and not p.rejected]
+        possibilities_showed = [p for p in self.possibilities if p.sheet_id is not None]
+        if len(possibilities) + len(possibilities_showed) == 0: return []
 
         price_filtered = sorted(possibilities, key = lambda p: p.gite.price)[:price_filter_number]
         distance_filtered = sorted(price_filtered, key = lambda p: p.total_trip_time)[:output_number]
@@ -78,7 +84,7 @@ class TripPlanner():
             possibility.number = next_index
             next_index += 1
 
-        return distance_filtered
+        return possibilities_showed + distance_filtered
 
     def refresh_results(self, restults_number = 10):
         raise NotImplementedError
