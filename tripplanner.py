@@ -1,4 +1,4 @@
-import json, utils, time
+import json, utils, time, pickle
 from api_google_sheets import TripPlanningSheet
 from possibility import Possibility
 import api_gites, api_sncf, api_car
@@ -7,9 +7,10 @@ from tqdm import tqdm
 class TripPlanner():
 
     def __init__(self, config_path = "config.json"):
+        self.config_path = config_path
         with open(config_path, "r") as f:
             self.config = json.load(f)
-
+            
         self.possibilities = None
         self.gites = None
         self.filtered_gites = None
@@ -98,3 +99,26 @@ class TripPlanner():
         for possibility in filtered_possibilities:
             possibility.set_routes()
         self.sheet.print_results(filtered_possibilities + self.rejected_possibilities, len(self.possibilities))
+        
+    def to_file(self, file_name):
+        output = {
+            "config_path": self.config_path,
+            "possibilities": self.possibilities,
+            "gites": self.gites,
+            "filtered_gites": self.filtered_gites
+        }
+        with open(file_name, 'wb') as f:
+            pickle.dump(output, f)
+    
+    @classmethod
+    def from_file(cls, file_name):
+        with open(file_name, 'rb') as f:
+            data = pickle.load(f)
+            
+        output = cls(data["config_path"])
+        output.possibilities = data["possibilities"]
+        output.gites = data["gites"]
+        output.filtered_gites = data["filtered_gites"]
+        
+        return output
+        
