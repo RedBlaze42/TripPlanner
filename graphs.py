@@ -31,7 +31,7 @@ default_mapbox_layout = go.Layout(
     )
 )
 
-def nb_gites_data(travelers, to_datetime = None):
+def nb_gites_data(travelers, gites_args = None, to_datetime = None):
     from_datetime = datetime.now()
     
     if to_datetime is None:
@@ -44,7 +44,7 @@ def nb_gites_data(travelers, to_datetime = None):
     checkout = checkin + timedelta(days = 1)
     progress_bar = tqdm(total = int((to_datetime-from_datetime).total_seconds()//86400))
     while checkout < to_datetime:
-        output[checkin.isoformat()] = len(api_gites.GitesDeFrance(checkin, checkout, travelers))
+        output[checkin.isoformat()] = len(api_gites.GitesDeFrance(checkin, checkout, travelers, **gites_args))
         checkin = checkout
         checkout += timedelta(days = 1)
         progress_bar.update(1)
