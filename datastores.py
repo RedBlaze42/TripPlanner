@@ -70,6 +70,8 @@ class Covoit():
 
     def set_trip_costs(self, matrix, covoits, total_cost):
         if not self.is_driver: return None
+        
+        total_cost *= 2 # Multiplies by two to account for return trip
 
         total_distance = sum([matrix[passenger_name]["_end"]["distance"] for passenger_name in self.passenger_names])
         total_distance += matrix[self.name]["_end"]["distance"]
