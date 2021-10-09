@@ -151,6 +151,19 @@ class TripPlanningSheet():
             "html":self.sftp_client.upload_file("results_map.html")
         }
         return output
+    
+    def get_result_map_links(self, possibility):
+        possibility.set_routes()
+        fig = graphs.covoit_route([participant.get_covoit() for participant in possibility.participants])
+        base_path = "result_{}".format(possibility.number)
+        png_path, html_path = base_path + ".png", base_path + ".html"
+        fig.write_image(png_path)
+        fig.write_html(html_path)
+        output = {
+            "png":self.sftp_client.upload_file(png_path),
+            "html":self.sftp_client.upload_file(html_path)
+        }
+        return output
         
     def get_result_line(self, possibility):
         output = [
@@ -200,8 +213,18 @@ class TripPlanningSheet():
             "values": make_list_to_len(covoit_values, nb_drivers_max, with_value = [""]*10)
         }
         
+        if self.sftp_client is not None:
+            map_result_links = self.get_result_map_links(possibility)
+            map_result = {
+                "range": self.ranges["result_map"],
+                "values": [['=HYPERLINK("Carte des déplacements";{})'.format(map_result_links["html"])],['=IMAGE({})'.format(map_result_links["png"])]]
+            }
+        
         updates = [header, link, participants, covoits]
+        if self.sftp_client is not None:
+            updates.append(map_result)
         updates += images
+        
         self.file.get_worksheet_by_id(possibility.sheet_id).batch_update(updates, value_input_option = "USER_ENTERED")
         
     def clear_results(self):
