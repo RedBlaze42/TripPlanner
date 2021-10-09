@@ -92,5 +92,9 @@ class TripPlanner():
         
         return [p for p in self.possibilities if p.rejected]
 
-    def refresh_results(self, restults_number = 10):
-        raise NotImplementedError
+    def refresh_results(self, results_number = 10):
+        self.sheet.delete_rejected(self.possibilities)
+        filtered_possibilities = self.filter_possibilities(output_number = results_number)
+        for possibility in filtered_possibilities:
+            possibility.set_routes()
+        self.sheet.print_results(filtered_possibilities + self.rejected_possibilities, len(self.possibilities))
