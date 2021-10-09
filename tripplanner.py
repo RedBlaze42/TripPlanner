@@ -77,8 +77,8 @@ class TripPlanner():
         if len(possibilities) + len(possibilities_showed) == 0: return []
 
         price_filtered = sorted(possibilities, key = lambda p: p.gite.price)[:price_filter_number]
-        distance_filtered = sorted(price_filtered, key = lambda p: p.total_trip_time)[:output_number]
-        next_index = max([p.number for p in self.possibilities if p.sheet_id is not None]) + 1 if len([1 for p in self.possibilities if p.sheet_id is not None]) > 0 else 1
+        distance_filtered = sorted(price_filtered, key = lambda p: p.total_trip_time)[:output_number - len(possibilities_showed)]
+        next_index = max([p.number for p in self.possibilities if p.number > 0]) + 1 if len([1 for p in self.possibilities if p.number > 0]) > 0 else 1
         
         for possibility in distance_filtered:
             possibility.number = next_index
