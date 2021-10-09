@@ -119,9 +119,11 @@ class TripPlanningSheet():
         rejected_grid_range = gspread.utils.a1_range_to_grid_range(self.ranges["rejected_results"])
         rejected_results_number = rejected_grid_range["endRowIndex"]-rejected_grid_range["startRowIndex"]
         rejected_results = [possibility for possibility in possibilities if possibility.rejected][:rejected_results_number]
+        rejected_results = sorted(rejected_results, key=lambda p: p.number)
         
         results_number = grid_range["endRowIndex"]-grid_range["startRowIndex"]
         results = [possibility for possibility in possibilities if not possibility.rejected][:results_number]
+        results = sorted(results, key=lambda p: p.number)
         
         results_array = [self.get_result_line(possibility) for possibility in results]
         results_array = make_list_to_len(results_array, results_number, with_value = [""]*column_number)
