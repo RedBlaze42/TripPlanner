@@ -68,6 +68,7 @@ class TripPlanningSheet():
         self.sheet_calculs.batch_update([{"range": self.ranges["cities_cache"], "values": (cities_cache)}, {"range": self.ranges["cities_coords"], "values": cities_coords}])
 
     def get_participants(self):
+        self.auto_complete_locations()
         participant_array = self.sheet_participants.batch_get([self.ranges["participant_array"]], major_dimension = "ROWS", value_render_option = "FORMULA")[0]
         participant_array = [participant for participant in participant_array if len(participant) > 0]
         coords_list = self.sheet_calculs.batch_get([self.ranges["cities_coords"]])[0]
