@@ -86,5 +86,11 @@ class TripPlanner():
 
         return possibilities_showed + distance_filtered
 
+    @property
+    def rejected_possibilities(self):
+        if self.possibilities is None or len(self.possibilities) == 0: return None
+        
+        return [p for p in self.possibilities if p.rejected]
+
     def refresh_results(self, restults_number = 10):
         raise NotImplementedError
