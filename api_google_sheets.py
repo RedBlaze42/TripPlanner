@@ -201,3 +201,15 @@ class TripPlanningSheet():
         updates = [header, link, participants, covoits]
         updates += images
         self.file.get_worksheet_by_id(possibility.sheet_id).batch_update(updates, value_input_option = "USER_ENTERED")
+        
+    def clear_results(self):
+        for worksheet in self.file.worksheets():
+            if "Gîte " in worksheet.title:
+                self.file.del_worksheet(worksheet)
+                
+        self.sheet_results.batch_clear([
+            self.ranges["results"],
+            self.ranges["results_map"],
+            self.ranges["nb_results"],
+            self.ranges["rejected_results"],
+        ])
