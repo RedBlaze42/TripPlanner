@@ -122,3 +122,6 @@ class TripPlanner():
         
         return output
         
+    def reset_gites(self):
+        self.possibilities = None
+        self.refresh_possibilities()
