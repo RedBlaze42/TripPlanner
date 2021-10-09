@@ -17,8 +17,7 @@ class Possibility():
             self.participants = participants
             self._covoits, self._covoit_calculator = None, None
             self._solution_set = False
-            self._route_set = False       
-            print("refreshed possibility")     
+            self._route_set = False
 
     @property
     def covoits(self):
