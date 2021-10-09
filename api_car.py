@@ -1,4 +1,4 @@
-import requests, json, polyline, ratelimit, threading
+import requests, json, polyline, time, threading
 from utils import distance_km, interpolate_segments
 
 def extract_michelin_points(points, data):
@@ -106,14 +106,26 @@ class OpenRouteService():
             self.api_key = json.load(f)["openrouteservice_key"]
         self.session = requests.Session()
         self.session.headers.update({'Authorization': self.api_key, "Accept": "application/json"})
+        
+    def post(self, url, json = None):
+        tries = 0
+        status_code = 429
+        while status_code == 429 and tries < 4:
+            req = self.session.post(url, json = json)
+            tries += 1  
+            status_code = req.status_code
             
-    @ratelimit.sleep_and_retry
-    @ratelimit.limits(calls = 40, period = 120)
+            if status_code == 429:
+                print("Waiting 30 secs...")
+                time.sleep(30)
+                
+        return req
+    
     def matrix(self, destinations):
         url = "https://api.openrouteservice.org/v2/matrix/driving-car"
         
         destinations_list = [dest_location[::-1] for dest_name, dest_location in destinations.items()]
-        req = self.session.post(url, json ={"locations":destinations_list,"metrics":["distance","duration"]})
+        req = self.post(url, json = {"locations":destinations_list,"metrics":["distance","duration"]})
         
         req.raise_for_status()
         
@@ -139,8 +151,6 @@ class OpenRouteService():
         
         return matrix_data
     
-    @ratelimit.sleep_and_retry
-    @ratelimit.limits(calls = 30, period = 60)
     def route(self, waypoints):
         url = "https://api.openrouteservice.org/v2/directions/driving-car"
         
@@ -149,7 +159,7 @@ class OpenRouteService():
             "extra_info":["tollways"],"instructions":"false","maneuvers":"false","units":"m","geometry":"true"
         }
         
-        req = self.session.post(url, json = data)
+        req = self.post(url, json = data)
         req.raise_for_status()
         data = req.json()
         data["route"] = data["routes"][0]
@@ -168,8 +178,6 @@ class OpenRouteService():
         driver.route = self.route(waypoints)
         return driver.route
     
-    @ratelimit.sleep_and_retry
-    @ratelimit.limits(calls = 100, period = 120)
     def geocode(self, query):
         url = "https://api.openrouteservice.org/geocode/search"
         
