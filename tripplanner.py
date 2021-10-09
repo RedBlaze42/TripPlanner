@@ -125,3 +125,4 @@ class TripPlanner():
     def reset_gites(self):
         self.possibilities = None
         self.refresh_possibilities()
+        self.sheet.clear_results()
