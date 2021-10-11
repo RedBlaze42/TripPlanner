@@ -172,7 +172,7 @@ class TripPlanningSheet():
             possibility.gite.location_name,
             possibility.gite.bedrooms if possibility.gite.bedrooms is not None else "?",
             possibility.gite.beds,
-            possibility.total_cost,
+            possibility.total_cost / len(possibility.participants),
             possibility.total_trip_time / 86400 / len(possibility.covoits),
             '=HYPERLINK("#gid={}";"Détails")'.format(possibility.sheet_id) if not possibility.rejected else '=HYPERLINK("{}";"Lien")'.format(possibility.gite.link)
         ]
@@ -186,7 +186,7 @@ class TripPlanningSheet():
         header = {"range":self.ranges["result_header"],"major_dimension":"COLUMNS","values":[[
             possibility.number,
             possibility.gite.title,
-            possibility.total_cost, "",
+            possibility.total_cost / len(possibility.participants), "",
             possibility.total_trip_time / 86400 / len(possibility.covoits),
             possibility.gite.bedrooms if possibility.gite.bedrooms is not None else "?",
             possibility.gite.beds,
