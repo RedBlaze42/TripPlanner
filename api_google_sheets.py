@@ -170,8 +170,8 @@ class TripPlanningSheet():
         output = [
             possibility.number,
             possibility.gite.location_name,
-            possibility.gite.bedrooms if possibility.gite.bedrooms is not None else "?",
-            possibility.gite.beds,
+            len(possibility.participants) / possibility.gite.bedrooms if possibility.gite.bedrooms is not None else "?",
+            sum([driver.calculate_detour(possibility.covoit_calculator.matrix) for driver in possibility.covoits.values() if driver.is_driver]) / 86400 / len([driver for driver in possibility.covoits.values() if driver.is_driver]),
             possibility.total_cost / len(possibility.participants),
             possibility.total_trip_time / 86400 / len(possibility.covoits),
             '=HYPERLINK("#gid={}";"Détails")'.format(possibility.sheet_id) if not possibility.rejected else '=HYPERLINK("{}";"Lien")'.format(possibility.gite.link)
