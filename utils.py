@@ -115,9 +115,10 @@ class SftpClient():
     def __init__(self, config_path = "config.json"):
         with open(config_path, "r") as f:
             self.access_info = json.load(f)["sftp_access"]
-        key = paramiko.RSAKey(data=decodebytes(self.access_info["keydata"].encode("utf-8")))
+        #key = paramiko.RSAKey(data=decodebytes(self.access_info["keydata"].encode("utf-8")))
         self.cnopts = pysftp.CnOpts()
-        self.cnopts.hostkeys.add(self.access_info["host"], 'ssh-rsa', key)
+        self.cnopts.hostkeys = None
+        #self.cnopts.hostkeys.add(self.access_info["host"], 'ssh-rsa', key)
         self.remote_path = "/" + "/".join([path for path in self.access_info["html_root"].split("/") + self.access_info["path"].split("/") if path != ""])
 
         with self.client as client:
