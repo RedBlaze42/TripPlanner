@@ -132,6 +132,8 @@ class CovoitCalculator():
         return names_ids, ids_names, matrix
 
     def set_train_stations(self):
+        if not any([isinstance(covoit, TrainUser) for covoit in self.covoits.values()]):
+            return self.covoits
         self.get_solution(ignore_trains = True)
 
         route_list = [driver.waypoints(self.covoits) for driver in self.drivers.values() if len(driver.passenger_names) < driver.capacity - 1]
