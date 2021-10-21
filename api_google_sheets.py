@@ -74,7 +74,7 @@ class TripPlanningSheet():
         coords_list = self.sheet_calculs.batch_get([self.ranges["cities_coords"]])[0]
         coords_list = [json.loads(coords[0]) for coords in coords_list if len(coords) > 0]
         
-        return [Participant(participant[0], participant[1], participant[2]+1, coords_list[i], participant[5]) for i, participant in enumerate(participant_array) if len(participant)>0 and participant[0]!=""]
+        return [Participant(participant[0], participant[2], participant[3]+1, coords_list[i], participant[5]) for i, participant in enumerate(participant_array) if len(participant)>0 and participant[0]!="" and participant[1]]
 
     def get_filters(self):
         raw_filters = self.sheet_participants.batch_get([self.ranges["filters"]], major_dimension = "COLUMNS", value_render_option = "FORMULA")[0][0]
