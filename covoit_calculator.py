@@ -168,7 +168,7 @@ class CovoitCalculator():
 
             for passenger in driver.passenger_names:
                 detour = driver.calculate_detour(self.matrix, passenger_name = passenger, absolute = True)
-                if detour > detour_limit:
+                if detour > detour_limit and len(self.api_sncf.get_stations_in_radius(self.covoits[passenger].location, 30)) > 0:
                     output.append(passenger)
 
         return output
