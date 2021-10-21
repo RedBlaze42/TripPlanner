@@ -128,11 +128,11 @@ class SftpClient():
     def client(self):
         return pysftp.Connection(self.access_info["host"], username = self.access_info["username"], password = self.access_info["password"], port = self.access_info["port"], cnopts = self.cnopts)
 
-    def upload_file(self, filename):
+    def upload_file(self, filename, delete_after = True):
         with self.client as client:
             with client.cd(self.remote_path):
                 client.put(filename)
-        
+        if delete_after: os.remove(filename)
         return nocache("http://" + "/".join([dirname for dirname in self.access_info["host"].split("/") + self.access_info["path"].split("/") + filename.split("/") if dirname != ""]))
 
     def list_dir(self):
