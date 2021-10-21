@@ -178,7 +178,7 @@ def map_gites(gites, participants_dict = None):
 def covoit_route(covoits):
     drivers = {driver_name: driver for driver_name, driver in covoits.items() if driver.is_driver}
     if any([driver.route is None for driver_name, driver in drivers.items()]):
-        return None
+        raise ValueError("No routes set")
     
     routes = list()
 

@@ -7,3 +7,4 @@ pysftp
 gspread>=4.0.1
 ratelimit
 numpy
+kaleido

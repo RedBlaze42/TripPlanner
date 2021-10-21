@@ -83,7 +83,7 @@ def format_seconds(seconds, show_seconds=False):
     
     return output
 
-def nocache(self, link):
+def nocache(link):
     link += "?" if not "?" in link else "&"
     link += "nocache={:.0f}".format(time.time())
     return link
