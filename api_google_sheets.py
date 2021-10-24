@@ -145,7 +145,7 @@ class TripPlanningSheet():
         
     def get_results_map_links(self, gites, participants):
         fig = graphs.map_gites(gites, {participant.name: participant.location for participant in participants})
-        fig[0].write_image("results_map.png")
+        fig[0].write_image("results_map.png", height = 1000, width = 1200)
         with open("results_map.html", "w") as f: f.write(fig[1])
         output = {
             "png":self.sftp_client.upload_file("results_map.png"),
@@ -158,7 +158,7 @@ class TripPlanningSheet():
         fig = graphs.covoit_route(possibility.covoits)
         base_path = "result_{}".format(possibility.number)
         png_path, html_path = base_path + ".png", base_path + ".html"
-        fig.write_image(png_path)
+        fig.write_image(png_path, height = 1000, width = 1200)
         fig.write_html(html_path)
         output = {
             "png":self.sftp_client.upload_file(png_path),
