@@ -50,7 +50,7 @@ class TripPlanner():
         total_budget = self.total_budget
         min_price = self.config["min_price"] * self.nb_participants * (self.gites.checkout_datetime - self.gites.checkin_datetime).total_seconds()/86400
         for gite in tqdm(self.gites):
-            if min_price < gite.price < total_budget and utils.is_in_france(gite.location[0], gite.location[1]):
+            if min_price < gite.price < total_budget and utils.is_in_france(gite.location):
                 if filters["max_beds_in_bedroom"] is None or self.nb_participants is None or (gite.bedrooms is not None and self.nb_participants / gite.bedrooms >= filters["max_beds_in_bedroom"]):
                     self.filtered_gites.append(gite)
         

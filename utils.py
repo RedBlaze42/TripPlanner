@@ -70,8 +70,8 @@ def interpolate_segments(points, step_km = 5):
 
     return output
 
-def is_in_france(lat, lon):
-    return distance_km([46.452547, 2.404213], [lat, lon]) < 600
+def is_in_france(location):
+    return distance_km([46.452547, 2.404213], location) < 600
 
 def format_seconds(seconds, show_seconds=False):
     output = ""
