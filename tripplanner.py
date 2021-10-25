@@ -50,7 +50,7 @@ class TripPlanner():
         total_budget = self.total_budget
         min_price = self.config["min_price"] * self.nb_participants * (self.gites.checkout_datetime - self.gites.checkin_datetime).total_seconds()/86400
         for gite in tqdm(self.gites):
-            if min_price < gite.price < total_budget and utils.is_in_france(gite.location):
+            if min_price < gite.price < total_budget:
                 if filters["max_beds_in_bedroom"] is None or self.nb_participants is None or (gite.bedrooms is not None and self.nb_participants / gite.bedrooms >= filters["max_beds_in_bedroom"]):
                     self.filtered_gites.append(gite)
         
@@ -73,11 +73,21 @@ class TripPlanner():
     def filter_possibilities(self, output_number = 10, price_filter_number = 50):
         if self.possibilities is None:
             self.refresh_possibilities()
-        possibilities = [p for p in self.possibilities if p.sheet_id is None and not p.rejected]
         possibilities_showed = [p for p in self.possibilities if p.sheet_id is not None]
-        if len(possibilities) + len(possibilities_showed) == 0: return []
 
-        price_filtered = sorted(possibilities, key = lambda p: p.gite.price)[:price_filter_number]
+        price_filtered = list()
+        while len(price_filtered) < price_filter_number:
+            filtered_possibilities = [p for p in sorted(self.possibilities, key = lambda p: p.gite.price) if not p in price_filtered and p.sheet_id is None and not p.rejected]
+            if len(filtered_possibilities) > 0:
+                if utils.is_in_france(filtered_possibilities[0].gite.location):
+                    price_filtered.append(filtered_possibilities[0])
+                else:
+                    self.possibilities.remove(filtered_possibilities[0])
+            else:
+                break
+        
+        if len(price_filtered) + len(possibilities_showed) == 0: return []
+                
         distance_filtered = sorted(price_filtered, key = lambda p: p.total_trip_time)[:output_number - len(possibilities_showed)]
         next_index = max([p.number for p in self.possibilities if p.number > 0]) + 1 if len([1 for p in self.possibilities if p.number > 0]) > 0 else 1
         
