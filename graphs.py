@@ -100,7 +100,7 @@ def nb_gites(to_datetime = None, travelers = 14, input_data = None):
 def map_gites(gites, participants_dict = None):
     gite_locations = {"lat":list(), "lon": list(), "text": list(), "link": list()}
 
-    for gite in tqdm(gites):
+    for gite in gites:
         gite_locations["lat"].append(gite.location[0])
         gite_locations["lon"].append(gite.location[1])
         gite_locations["link"].append(gite.link)
