@@ -227,6 +227,14 @@ class TripPlanningSheet():
             possibility.sheet_id = result_sheet.id
         
         self.file.get_worksheet_by_id(possibility.sheet_id).batch_update(updates, value_input_option = "USER_ENTERED")
+        self.file.batch_update({"requests": [
+            {
+                "updateSheetProperties": {
+                    "properties": {"sheetId": possibility.sheet_id, "hidden": False},
+                    "fields": "hidden",
+                }
+            }
+        ]})
         
     def clear_results(self):
         for worksheet in self.file.worksheets():
