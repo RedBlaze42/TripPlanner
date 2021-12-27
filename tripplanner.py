@@ -101,13 +101,16 @@ class TripPlanner():
     def rejected_possibilities(self):
         if self.possibilities is None or len(self.possibilities) == 0: return None
         
-        return [p for p in self.possibilities if p.rejected]
+        return [p for p in self.possibilities if p.rejected and not p.invalid]
 
     def refresh_results(self, **kwargs):
         self.sheet.delete_rejected(self.possibilities)
         filtered_possibilities = self.filter_possibilities(**kwargs)
         for possibility in filtered_possibilities:
-            possibility.set_routes()
+            try:
+                possibility.set_routes()
+            except api_car.InvalidLocationError:
+                continue
         self.sheet.print_results(filtered_possibilities + self.rejected_possibilities, len(self.possibilities))
         
     def to_file(self, file_name):

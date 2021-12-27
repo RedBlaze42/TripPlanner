@@ -1,4 +1,5 @@
 from covoit_calculator import CovoitCalculator
+from api_car import InvalidLocationError
 
 class Possibility():
     def __init__(self, participants, gite):
@@ -7,6 +8,7 @@ class Possibility():
         self._covoits, self._covoit_calculator = None, None
         self._solution_set = False
         self._route_set = False
+        self.invalid = False
         
         self.rejected = False
         self.sheet_id = None
@@ -44,10 +46,16 @@ class Possibility():
         self.set_solution()
 
     def set_routes(self):
-        if not self._route_set:    
-            self.set_solution()
-            self.covoit_calculator.set_routes()
-            self._route_set = True
+        if not self._route_set:
+            try:
+                self.set_solution()
+                self.covoit_calculator.set_routes()
+            except InvalidLocationError as e:
+                self.invalid = True
+                self.rejected = True
+                raise e
+            else:
+                self._route_set = True
 
     def refresh_routes(self):
         self._route_set = False

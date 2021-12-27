@@ -163,13 +163,16 @@ class OpenRouteService():
     
     def route(self, waypoints):
         url = "https://api.openrouteservice.org/v2/directions/driving-car"
-        
         data = {
-            "coordinates":[waypoint[::-1] for waypoint in waypoints],
+            "coordinates":[list(waypoint[::-1]) for waypoint in waypoints],
             "extra_info":["tollways"],"instructions":"false","maneuvers":"false","units":"m","geometry":"true"
         }
         
         req = self.post(url, json = data)
+        
+        if req.status_code == 404:
+            raise InvalidLocationError
+
         req.raise_for_status()
         data = req.json()
         data["route"] = data["routes"][0]
@@ -217,4 +220,7 @@ class OpenRouteService():
             )
         }
         
-        return output      
+        return output
+    
+class InvalidLocationError(Exception):
+    pass
