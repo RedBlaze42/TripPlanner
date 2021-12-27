@@ -61,7 +61,17 @@ class Michelin():
             "distUnit":"m","itit":0,"veht":0,"avoidExpressWays":False,"avoidBorders":False,"avoidTolls":False,"avoidCCZ":False,"avoidORC":False,"avoidPass":False,"avoidClosedRoad":True,"currency":"EUR","favMotorways":False,"fuelCost":fuel_cost,"itineraryFuelType":"petrol","fullMapOpt":"300:300:true:true:true","indemnite":0,"stepMapOpt":"300:300:true:true:true","traffic":"ALL","isCostFctUsingTraffic":False,"sortFDRsByTraffic":False,"itineraryVehiculeType":"hatchback","wCaravan":False,"withSecurityAdv":False,"shouldUseNewEngine":False,"shouldUseTraffic":False,"costCategory":"car","isMotorVehicle":True,"lg":"eng","obfuscation":False,"charset":"UTF-8","ie":"UTF-8","nocache":1632567830744,"protocol":"https","callback":"JSE.HTTP.asyncRequests[3]._scriptLoaded"
         }
         
-        req = requests.get(url, params = data)
+        tries = 0
+        
+        while tries < 10:
+            try:
+                req = requests.get(url, params = data)
+            except requests.exceptions.ConnectionError:
+                tries += 1
+                continue
+            else:
+                break
+        
         req.raise_for_status()
         data = json.loads(req.content[req.content.decode("utf-8").index("{"):-1])
         
@@ -153,13 +163,16 @@ class OpenRouteService():
     
     def route(self, waypoints):
         url = "https://api.openrouteservice.org/v2/directions/driving-car"
-        
         data = {
-            "coordinates":[waypoint[::-1] for waypoint in waypoints],
+            "coordinates":[list(waypoint[::-1]) for waypoint in waypoints],
             "extra_info":["tollways"],"instructions":"false","maneuvers":"false","units":"m","geometry":"true"
         }
         
         req = self.post(url, json = data)
+        
+        if req.status_code == 404:
+            raise InvalidLocationError
+
         req.raise_for_status()
         data = req.json()
         data["route"] = data["routes"][0]
@@ -207,4 +220,7 @@ class OpenRouteService():
             )
         }
         
-        return output      
+        return output
+    
+class InvalidLocationError(Exception):
+    pass

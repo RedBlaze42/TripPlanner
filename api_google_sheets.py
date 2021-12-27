@@ -112,7 +112,10 @@ class TripPlanningSheet():
     def print_results(self, possibilities, nb_results):
         for possibility in possibilities:
             if not possibility.rejected:
-                self.print_result(possibility)
+                try:
+                    self.print_result(possibility)
+                except api_car.InvalidLocationError:
+                    continue
         
         grid_range = gspread.utils.a1_range_to_grid_range(self.ranges["results"])
         column_number = grid_range["endColumnIndex"]-grid_range["startColumnIndex"]
@@ -128,7 +131,7 @@ class TripPlanningSheet():
         
         results_array = [self.get_result_line(possibility) for possibility in results]
         results_array = make_list_to_len(results_array, results_number, with_value = [""]*column_number)
-        rejected_results_array = [self.get_result_line(possibility) for possibility in rejected_results]
+        rejected_results_array = [self.get_result_line(possibility) for possibility in rejected_results if not possibility.invalid]
         rejected_results_array = make_list_to_len(rejected_results_array, rejected_results_number, with_value = [""]*column_number)
         
         updates = [
