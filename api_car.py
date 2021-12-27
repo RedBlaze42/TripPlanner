@@ -61,7 +61,17 @@ class Michelin():
             "distUnit":"m","itit":0,"veht":0,"avoidExpressWays":False,"avoidBorders":False,"avoidTolls":False,"avoidCCZ":False,"avoidORC":False,"avoidPass":False,"avoidClosedRoad":True,"currency":"EUR","favMotorways":False,"fuelCost":fuel_cost,"itineraryFuelType":"petrol","fullMapOpt":"300:300:true:true:true","indemnite":0,"stepMapOpt":"300:300:true:true:true","traffic":"ALL","isCostFctUsingTraffic":False,"sortFDRsByTraffic":False,"itineraryVehiculeType":"hatchback","wCaravan":False,"withSecurityAdv":False,"shouldUseNewEngine":False,"shouldUseTraffic":False,"costCategory":"car","isMotorVehicle":True,"lg":"eng","obfuscation":False,"charset":"UTF-8","ie":"UTF-8","nocache":1632567830744,"protocol":"https","callback":"JSE.HTTP.asyncRequests[3]._scriptLoaded"
         }
         
-        req = requests.get(url, params = data)
+        tries = 0
+        
+        while tries < 10:
+            try:
+                req = requests.get(url, params = data)
+            except requests.exceptions.ConnectionError:
+                tries += 1
+                continue
+            else:
+                break
+        
         req.raise_for_status()
         data = json.loads(req.content[req.content.decode("utf-8").index("{"):-1])
         
