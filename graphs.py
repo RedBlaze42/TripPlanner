@@ -58,7 +58,7 @@ def nb_gites(to_datetime = None, travelers = 14, input_data = None):
     input_data = {datetime.fromisoformat(date): value for date, value in input_data.items()}
     trace = {
         "type": "heatmap",
-        "colorbar": {"title": "gites"},
+        "colorbar": {"title": "lodges"},
         "hoverinfo": "text",
         "colorscale": "thermal" #[[0,"rgb(255, 0, 0)"],[1,"rgb(0, 255, 0)"]]
     }
@@ -73,14 +73,14 @@ def nb_gites(to_datetime = None, travelers = 14, input_data = None):
 
     data = gos.Data([trace])
     layout = {
-        "title": "Nombre de gîtes disponibles sur gitesdefrance.com pour {} personnes<br>Mis à jour le {}".format(travelers, datetime.now().strftime("%d/%m/%Y")), 
+        "title": "Number of lodges available on gites-de-france.com for {} people<br>Updated on {}".format(travelers, datetime.now().strftime("%d/%m/%Y")), 
         "xaxis": {
             "title": "", 
             "mirror": True, 
             "ticklen": 0, 
             "showline": True, 
             "tickmode": "array", 
-            "ticktext": ["Janvier","Février","Mars","Avril","Mai","Juin","Août","Septembre","Octobre","Novembre","Décembre"]*2,
+            "ticktext": ["January","February","March","April","May","June","August","September","October","November","December"]*2,
             "tickvals": [i+2 for i in range(22)]
         }, 
         "yaxis": {
@@ -104,7 +104,7 @@ def map_gites(gites, participants_dict = None):
         gite_locations["lat"].append(gite.location[0])
         gite_locations["lon"].append(gite.location[1])
         gite_locations["link"].append(gite.link)
-        gite_locations["text"].append("{} Chambres<br>{} Personnes\n{}€".format(gite.bedrooms, gite.beds, gite.price))
+        gite_locations["text"].append("{} Bedrooms<br>{} People\n{}€".format(gite.bedrooms, gite.beds, gite.price))
         
     data = [
         go.Scattermapbox(

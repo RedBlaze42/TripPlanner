@@ -34,8 +34,8 @@ class TripPlanningSheet():
         self.file = self.gc.open_by_url(self.config["google_sheet"]["link"])
         self.sheet_calculs = self.file.worksheet("Calculs")
         self.sheet_participants = self.file.worksheet("Participants")
-        self.sheet_results = self.file.worksheet("Résultats")
-        self.sheet_result_model = self.file.worksheet("Gite_model")
+        self.sheet_results = self.file.worksheet("Results")
+        self.sheet_result_model = self.file.worksheet("Lodge_model")
         
         self.api_open_route = api_car.OpenRouteService(config_path = config_path)
         if "sftp_access" in self.config.keys():
@@ -138,7 +138,7 @@ class TripPlanningSheet():
         ]
         if self.sftp_client is not None:
             results_map = self.get_results_map_links([result.gite for result in results], list(results[0].covoits.values()))
-            results_map_values = [['=HYPERLINK("{}";"Carte interactive")'.format(results_map["html"])],['=IMAGE("{}")'.format(results_map["png"])]]
+            results_map_values = [['=HYPERLINK("{}";"Interactive map")'.format(results_map["html"])],['=IMAGE("{}")'.format(results_map["png"])]]
             updates.append({"range": self.ranges["results_map"], "values": results_map_values})
             
         self.sheet_results.batch_update(updates, value_input_option = "USER_ENTERED")
@@ -174,7 +174,7 @@ class TripPlanningSheet():
             sum([driver.calculate_detour(possibility.covoit_calculator.matrix) for driver in possibility.covoits.values() if driver.is_driver]) / 86400 / len([driver for driver in possibility.covoits.values() if driver.is_driver]),
             possibility.total_cost / len(possibility.participants),
             possibility.total_trip_time / 86400 / len(possibility.covoits),
-            '=HYPERLINK("#gid={}";"Détails")'.format(possibility.sheet_id) if not possibility.rejected else '=HYPERLINK("{}";"Lien")'.format(possibility.gite.link)
+            '=HYPERLINK("#gid={}";"Details")'.format(possibility.sheet_id) if not possibility.rejected else '=HYPERLINK("{}";"Link")'.format(possibility.gite.link)
         ]
         return output
     
@@ -190,7 +190,7 @@ class TripPlanningSheet():
             ceil(len(possibility.covoits)/possibility.gite.bedrooms) if possibility.gite.bedrooms is not None else "?"
         ]]}
         images = [{"range": self.ranges["result_images"][i], "values": [['=IMAGE("{}")'.format(image)]]} for i, image in enumerate(possibility.gite.images[:len(self.ranges["result_images"])])]
-        link = {"range": self.ranges["result_link"], "values":[['=HYPERLINK("{}";"Lien")'.format(possibility.gite.link)]]}
+        link = {"range": self.ranges["result_link"], "values":[['=HYPERLINK("{}";"Link")'.format(possibility.gite.link)]]}
         participants = {
             "range": self.ranges["result_participants"],
             "values":[[participant.name, possibility.gite.price/len(possibility.covoits), participant.trip_cost, participant.trip_time/86400] for participant in possibility.covoits.values()]
@@ -214,7 +214,7 @@ class TripPlanningSheet():
             map_result_links = self.get_result_map_links(possibility)
             map_result = {
                 "range": self.ranges["result_map"],
-                "values": [['=HYPERLINK("{}";"Carte des déplacements")'.format(map_result_links["html"])],['=IMAGE("{}")'.format(map_result_links["png"])]]
+                "values": [['=HYPERLINK("{}";"Trip map")'.format(map_result_links["html"])],['=IMAGE("{}")'.format(map_result_links["png"])]]
             }
         
         updates = [header, link, participants, covoits]
