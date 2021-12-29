@@ -21,6 +21,7 @@ class Possibility():
             self._covoits, self._covoit_calculator = None, None
             self._solution_set = False
             self._route_set = False
+            self.sheet_id = None
 
     @property
     def covoits(self):
@@ -43,6 +44,8 @@ class Possibility():
             self._solution_set = True
 
     def refresh_solution(self):
+        self._covoits = None
+        self._covoit_calculator = None
         self._solution_set = False
         self.set_solution()
 

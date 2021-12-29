@@ -94,8 +94,9 @@ class TripPlanner():
         next_index = max([p.number for p in self.possibilities if p.number > 0]) + 1 if len([1 for p in self.possibilities if p.number > 0]) > 0 else 1
         
         for possibility in distance_filtered:
-            possibility.number = next_index
-            next_index += 1
+            if possibility.number == 0:
+                possibility.number = next_index
+                next_index += 1
 
         return possibilities_showed + distance_filtered
 
