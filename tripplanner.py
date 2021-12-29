@@ -15,6 +15,8 @@ class TripPlanner():
         self.gites = None
         self.filtered_gites = None
 
+        self.with_trains = True
+
         self.participant_cache = set()
         self.participants_last_loaded = 0
         self.sheet = TripPlanningSheet(config_path = config_path)
@@ -59,7 +61,7 @@ class TripPlanner():
     def refresh_possibilities(self):
         participants = self.refresh_participants()
         if self.possibilities is None or len(self.possibilities) == 0:
-            self.possibilities = [Possibility(self.participants, gite) for gite in self.get_gites()]
+            self.possibilities = [Possibility(self.participants, gite, with_trains = self.with_trains) for gite in self.get_gites()]
         else:
             for possibility in self.possibilities:
                 possibility.set_participants(participants)
