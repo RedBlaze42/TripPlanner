@@ -187,7 +187,7 @@ def covoit_route(covoits):
         steps = list()
         steps.append((driver.name, driver.location))
         steps += [(passenger_name,covoits[passenger_name].location) for passenger_name in driver.passenger_names]
-        steps.append(("Gite", driver.destination))
+        steps.append(("Destination", driver.destination))
 
         routes.append([
             driver.route,
@@ -233,7 +233,7 @@ def covoit_route(covoits):
             lat = [marker["location"][0] for marker in markers if marker["type"] == "driver"],
             lon = [marker["location"][1] for marker in markers if marker["type"] == "driver"],
             text = [marker["name"] for marker in markers if marker["type"] == "driver"],
-            name = "Conducteurs",
+            name = "Drivers",
             marker_size = 15,
             marker_color = "green",
             hoverinfo = "text",
@@ -252,7 +252,7 @@ def covoit_route(covoits):
                 lat = [station["location"][0] for station_name, station in train_stations.items()],
                 lon = [station["location"][1] for station_name, station in train_stations.items()],
                 text = [station["name"] for station_name, station in train_stations.items()],
-                name = "Gare",
+                name = "Train station",
                 marker_size = 15,
                 marker_color = "black",
                 hoverinfo = "text",
@@ -281,7 +281,7 @@ def covoit_route(covoits):
             lat = [marker["location"][0] for marker in markers if marker["type"] == "passenger"],
             lon = [marker["location"][1] for marker in markers if marker["type"] == "passenger"],
             text = [marker["name"] for marker in markers if marker["type"] == "passenger"],
-            name = "Passagers",
+            name = "Passengers",
             marker_size = 15,
             marker_color = "blue",
             hoverinfo = "text",
@@ -296,7 +296,7 @@ def covoit_route(covoits):
             lat = [marker["location"][0] for marker in markers if marker["type"] == "end"],
             lon = [marker["location"][1] for marker in markers if marker["type"] == "end"],
             text = [marker["name"] for marker in markers if marker["type"] == "end"],
-            name = "Gîte",
+            name = "Destination",
             marker_size = 15,
             marker_color = "red",
             hoverinfo = "text",
