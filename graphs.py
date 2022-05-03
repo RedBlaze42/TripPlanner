@@ -36,8 +36,8 @@ def nb_gites_data(travelers, gites_args = None, to_datetime = None):
     
     if to_datetime is None:
         to_datetime = from_datetime + timedelta(days = 31*7)
-
-    to_datetime = to_datetime.replace(month = to_datetime.month + 1, day = 2)
+    to_month = to_datetime.month + 1 if to_datetime.month < 12 else 13 - to_datetime.month
+    to_datetime = to_datetime.replace(month = to_month, day = 2)
 
     output = dict()
     checkin = from_datetime
