@@ -80,7 +80,7 @@ def nb_gites(to_datetime = None, travelers = 14, input_data = None):
             "ticklen": 0, 
             "showline": True, 
             "tickmode": "array", 
-            "ticktext": ["Janvier","Février","Mars","Avril","Mai","Juin","Août","Septembre","Octobre","Novembre","Décembre"]*2,
+            "ticktext": ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"]*2,
             "tickvals": [i+2 for i in range(22)]
         }, 
         "yaxis": {
