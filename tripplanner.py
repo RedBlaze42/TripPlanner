@@ -15,6 +15,8 @@ class TripPlanner():
         self.gites = None
         self.filtered_gites = None
 
+        self.with_trains = True
+
         self.participant_cache = set()
         self.participants_last_loaded = 0
         self.sheet = TripPlanningSheet(config_path = config_path)
@@ -59,7 +61,7 @@ class TripPlanner():
     def refresh_possibilities(self):
         participants = self.refresh_participants()
         if self.possibilities is None or len(self.possibilities) == 0:
-            self.possibilities = [Possibility(self.participants, gite) for gite in self.get_gites()]
+            self.possibilities = [Possibility(self.participants, gite, with_trains = self.with_trains) for gite in self.get_gites()]
         else:
             for possibility in self.possibilities:
                 possibility.set_participants(participants)
@@ -92,8 +94,9 @@ class TripPlanner():
         next_index = max([p.number for p in self.possibilities if p.number > 0]) + 1 if len([1 for p in self.possibilities if p.number > 0]) > 0 else 1
         
         for possibility in distance_filtered:
-            possibility.number = next_index
-            next_index += 1
+            if possibility.number == 0:
+                possibility.number = next_index
+                next_index += 1
 
         return possibilities_showed + distance_filtered
 
@@ -101,13 +104,16 @@ class TripPlanner():
     def rejected_possibilities(self):
         if self.possibilities is None or len(self.possibilities) == 0: return None
         
-        return [p for p in self.possibilities if p.rejected]
+        return [p for p in self.possibilities if p.rejected and not p.invalid]
 
     def refresh_results(self, **kwargs):
         self.sheet.delete_rejected(self.possibilities)
         filtered_possibilities = self.filter_possibilities(**kwargs)
         for possibility in filtered_possibilities:
-            possibility.set_routes()
+            try:
+                possibility.set_routes()
+            except api_car.InvalidLocationError:
+                continue
         self.sheet.print_results(filtered_possibilities + self.rejected_possibilities, len(self.possibilities))
         
     def to_file(self, file_name):

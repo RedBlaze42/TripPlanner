@@ -1,0 +1,40 @@
+{
+    "openrouteservice_key": "REDACTED",
+    "mapbox_key": "REDACTED",
+    "google_sheet": {
+        "link": "REDACTED",
+        "ranges": {
+            "departure_cities": "F4:F24",
+            "cities_cache": "E3:E23",
+            "cities_coords": "F3:F23",
+            "participant_array": "B4:H24",
+            "results": "B4:H13",
+            "results_map": "J8:J9",
+            "rejected_results": "B15:H100",
+            "nb_results": "M2",
+            "dates": "K4:K5",
+            "filters": "K9:K19",
+            "result_header": "D2:D10",
+            "result_link": "B12",
+            "result_covoits": "B26:K35",
+            "result_participants": "M4:P22",
+            "result_images": ["B13", "M24", "B39", "G39", "B51", "G51"],
+            "result_reject": "D11",
+            "result_map": "G2:G3"
+        },
+        "filters": [
+            "ANIMALS", "SEA", "MOUNTAIN", "DISHWASHER", "LAUNDRY", "WIFI", "POOL", "GITE", 
+            "GITE_DE_GROUPE"
+        ]
+    },
+    "sftp_access": {
+        "host": "REDACTED",
+        "username": "REDACTED",
+        "port": 22,
+        "password": "REDACTED",
+        "html_root": "/var/www/html",
+        "path": "trip_planner",
+        "keydata": "REDACTED"
+    },
+    "min_price": 4
+}

@@ -50,7 +50,7 @@ class CovoitCalculator():
         
         self.last_matrix_destinations = self.destinations
 
-    def get_solution(self, ignore_trains = False, max_compute_time = 90):
+    def get_solution(self, ignore_trains = False, max_compute_time = 1):
         if not ignore_trains:
             self.set_destinations(self.covoits)
         else:
@@ -90,6 +90,7 @@ class CovoitCalculator():
 
         search_parameters = pywrapcp.DefaultRoutingSearchParameters()
         search_parameters.first_solution_strategy = (routing_enums_pb2.FirstSolutionStrategy.GLOBAL_CHEAPEST_ARC)
+        search_parameters.local_search_metaheuristic = (routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
         search_parameters.time_limit.seconds = max_compute_time
 
         solution = routing.SolveWithParameters(search_parameters)
@@ -167,7 +168,7 @@ class CovoitCalculator():
         for driver_name, driver in self.drivers.items():
 
             for passenger in driver.passenger_names:
-                detour = driver.calculate_detour(self.matrix, passenger_name = passenger, absolute = True)
+                detour = driver.calculate_detour(self.matrix, passenger_name = passenger)
                 if detour > detour_limit and len(self.api_sncf.get_stations_in_radius(self.covoits[passenger].location, 30)) > 0:
                     output.append(passenger)
 
